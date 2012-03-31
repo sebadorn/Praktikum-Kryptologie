@@ -19,33 +19,33 @@ if __name__ == "__main__":
 	from_file = sys.argv[1]
 	to_file = sys.argv[2]
 	rows = int( sys.argv[3] )
-	cols = int( sys.argv[4] ) - 1
+	cols = int( sys.argv[4] )
 
 	if os.path.isfile( to_file ):
 		print "File " + to_file + " already exists. I don't want to overwrite your stuff."
 		print "Please choose a name without an existing file to it."
 		sys.exit( 2 )
 
-	# get input file
+	# Get input file
 	file_in = open( from_file, "r" );
 
-	# clean up line breaks
+	# Clean up line breaks
 	msg = []
 	for word in file_in.readlines():
 		word = word.replace( "\n", "" )
-		if( word != "" ):
+		if word != "":
 			msg.append( word )
 
 	file_in.close()
 
-	# switch rows and columns
+	# Switch rows and columns
 	lines = []
-	for col in range( 0, cols ):
+	for col in range( 0, cols + 1 ):
 		line = msg[col::rows]
-		if len( line ) == cols + 1:
+		if len( line ) == cols:
 			lines.append( line )
 
-	# write result to file
+	# Write result to file
 	file_out = open( to_file, "w" )
 	for line in lines:
 		for word in line:

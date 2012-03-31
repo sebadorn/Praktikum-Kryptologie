@@ -1,0 +1,2 @@
+Open me. Read me.
+Copy me to a new file.
