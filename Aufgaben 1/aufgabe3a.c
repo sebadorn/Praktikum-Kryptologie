@@ -8,26 +8,25 @@
 #define BUFSIZE 80
 
 
-const char abc[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
-
 /**
- *
- * @param char* msg_before
- * @param char* filename
+ * Reads the content of a text file.
+ * @param char* msg_before Destination of the text file content.
+ * @param char* filename Name of the text file to read.
  */
 char *read_msg_file( char *msg_before, char *filename ) {
 	FILE *msg_file;
-	char buf[BUFSIZE];
+	char buffer[BUFSIZE];
 
+	// Open file
 	msg_file = fopen( filename, "r" );
 	if( msg_file == NULL ) {
 		printf( "Could not open file %s.\n", filename );
 		exit( EXIT_FAILURE );
 	}
 
-	while( fgets( buf, BUFSIZE, msg_file ) != NULL ) {
-		strcat( msg_before, buf );
+	// Read content of file
+	while( fgets( buffer, BUFSIZE, msg_file ) != NULL ) {
+		strcat( msg_before, buffer );
 	}
 	fclose( msg_file );
 }
@@ -47,6 +46,7 @@ int main( int argc, char *argv[] ) {
 	int ascii;
 	size_t msg_length;
 
+	// Read parameters
 	if( argc < 3 ) {
 		printf( "ERROR: Missing parameters.\n" );
 		return EXIT_FAILURE;
@@ -54,6 +54,11 @@ int main( int argc, char *argv[] ) {
 
 	filename = argv[1];
 	shift = atoi( argv[2] );
+
+	if( shift < 1 || shift > 25 ) {
+		printf( "ERROR: Value for shift should be between 1 and 25. Input was %d.\n", shift );
+		return EXIT_FAILURE;
+	}
 
 
 	// Allocate memory for the message
