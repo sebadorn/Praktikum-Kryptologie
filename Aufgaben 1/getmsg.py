@@ -49,7 +49,7 @@ if __name__ == "__main__":
 	file_out = open( to_file, "w" )
 	for line in lines:
 		for word in line:
-			file_out.write( word + " " )
+			file_out.write( word )
 		file_out.write( "\n" )
 	file_out.close()
 
