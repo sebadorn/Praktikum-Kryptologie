@@ -16,8 +16,8 @@ const char *ABC = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
  * of hell for everyone with a little more knowledge than I have.
  *
  * Seriously, there has to be an easier way for basically everything
- * I did here. After writing 5 for-loops or so, which more less do the
- * same thing, I'm kind of sure about that.
+ * I did here. After writing 5 for-loops or so, which more or less do
+ * the same thing, I'm kind of sure about that.
  */
 
 
