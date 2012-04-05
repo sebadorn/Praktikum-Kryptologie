@@ -13,7 +13,7 @@
  * @param char* msg_before Destination of the text file content.
  * @param char* filename Name of the text file to read.
  */
-char *read_msg_file( char *msg_before, char *filename ) {
+void read_msg_file( char *msg_before, char *filename ) {
 	FILE *msg_file;
 	char buffer[BUFSIZE];
 
@@ -33,7 +33,7 @@ char *read_msg_file( char *msg_before, char *filename ) {
 
 
 /**
- * Uses "msg-useable.txt" as input.
+ * Uses "msg-useable-a.txt" as input.
  * Solution through trying 1-25 as shift value results in 23.
  */
 int main( int argc, char *argv[] ) {
