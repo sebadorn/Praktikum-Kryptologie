@@ -1,14 +1,17 @@
 CC = gcc
-CFLAGS = -g
-SRCS = $(wildcard *.c)
+SRCS = $(wildcard aufgabe*.c)
 PROGS = $(patsubst %.c,%.out,$(SRCS))
+CRYPTOLIB = ../lib/crypto
 
-all: $(PROGS)
+all: $(CRYPTOLIB).o $(PROGS)
+
+$(CRYPTOLIB).o: $(CRYPTOLIB).c
+	$(CC) -c $(CRYPTOLIB).c -o $(CRYPTOLIB).o
 
 %.out: %.c
-	$(CC) $(CFLAGS) $< -o $@
+	$(CC) -g $< -o $@ $(CRYPTOLIB).o
 
 .PHONY: clean
 
 clean:
-	rm -f *.out
+	rm -f *.out *.o $(CRYPTOLIB).o
