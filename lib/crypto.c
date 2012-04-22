@@ -145,3 +145,16 @@ int EulerPhi( int n ) {
 	}
 	return ep;
 }
+
+
+/**
+ * Linear Congruential Generator.
+ * @param int seed Start value x0.
+ * @param int a Multiplier.
+ * @param int b Increment.
+ * @param int m Modulus.
+ * @return int Pseudo-random value.
+ */
+int lcg( int seed, int a, int b, int m ) {
+	return modulo( ( a * seed + b ), m );
+}
