@@ -128,3 +128,20 @@ int modulo( int a, int b ) {
 	}
 	return a % b;
 }
+
+
+/**
+ * Euler's phi function.
+ * @param int n
+ * @return int Number of natural numbers smaller than n and coprime to n.
+ */
+int EulerPhi( int n ) {
+	int i, ep = 0;
+
+	for( i = 0; i < n; i++ ) {
+		if( ggT( i, n ) == 1 ) {
+			ep++;
+		}
+	}
+	return ep;
+}
