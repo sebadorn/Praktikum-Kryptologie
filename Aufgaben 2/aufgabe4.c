@@ -5,13 +5,14 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <limits.h>
+#include <math.h>
 
 #include "../lib/crypto.h"
 
 
 const char chiffre_file[] = "chiffre-4.txt";
-const unsigned char plain[] = "CLOUDSDALE";
-int xstart[8] = { 1, 0, 1, 0, 1, 0, 1, 0 };
+unsigned char plain[] = "TheQuickBrownFoxJumpsOverTheLazyDog.";
+int xstart[8] = { 0, 1, 0, 1, 0, 1, 0, 1 };
 
 
 /**
@@ -71,64 +72,81 @@ void read_chiffre( unsigned char *dest, const char *filename ) {
  * @param unsigned char *plain
  */
 void stream_cipher( unsigned char *dest, unsigned char *plain ) {
-	int i, j, b, bit, k;
-	int x[8], key[8];
+	unsigned int x[8], key[8], bit[8];
+	unsigned int i, j, c;
 
 	for( i = 0; i < 8; i++ ) {
 		x[i] = xstart[i];
 	}
 
-	// TODO: This won't work. At least not the way it's supposed to.
 	for( i = 0; i < strlen( plain ); i++ ) {
-		k = 0;
+		// New key from the shift register
 		shift_register_8( key, x );
 
-		for( bit = 1 << ( 8 - 1 ); bit; bit >>= 1 ) { // 8 -> CHAR_BIT
-			b = ( plain[i] & bit ) ? 1 : 0;
-			b = ( b + key[k++] ) % 2;
-			dest[i] |= b << k; // Set bit k to b.
+		// Get bits of char
+		c = (unsigned int) plain[i] % 128;
+		bit[0] = c / 128; c -= ( bit[0] * 128 );
+		bit[1] = c / 64;  c -= ( bit[1] * 64 );
+		bit[2] = c / 32;  c -= ( bit[2] * 32 );
+		bit[3] = c / 16;  c -= ( bit[3] * 16 );
+		bit[4] = c / 8;   c -= ( bit[4] * 8 );
+		bit[5] = c / 4;   c -= ( bit[5] * 4 );
+		bit[6] = c / 2;   c -= ( bit[6] * 2 );
+		bit[7] = c;
+
+		// XOR char bits and key
+		c = 0;
+		for( j = 0; j < 8; j++ ) {
+			//printf( "bit[%d] = ( %d + %d ) %% 2 = ", j, bit[j], key[j] );
+			bit[j] = ( bit[j] + key[j] ) % 2;
+			//printf( "%d\n", bit[j] );
+			c += bit[j] * pow( 2.0, 7 - j );
 		}
 
+		dest[i] = (unsigned char) c % 128;
+		//printf( "%d -> %d\n", plain[i], c );
+
+		// Key will be seed for the next key
 		for( j = 0; j < 8; j++ ) {
 			x[j] = key[j];
 		}
 	}
+
+	dest[i] = '\0';
+	//printf( "---------\n" );
 }
 
 
 int main( void ) {
 	struct stat st;
 	unsigned char *chiffre;
-	unsigned char encrypted[strlen( plain )];
-	unsigned char decrypted[strlen( plain )];
-	int xnew[8];
-	int i;
+	unsigned char *chiffre_decrypted;
+	unsigned char encrypted[strlen( plain ) + 1];
+	unsigned char decrypted[strlen( plain ) + 1];
 
-	shift_register_8( xnew, xstart );
+	// Test with encryption and decryption
+	stream_cipher( encrypted, plain );
+	printf( "----------\n" );
+	printf( "%s -> %s\n", plain, encrypted );
+	printf( "----------\n" );
+	stream_cipher( decrypted, encrypted );
+	printf( "%s -> %s\n", encrypted, decrypted );
+	printf( "----------\n" );
 
-	for( i = 0; i < 8; i++ ) {
-		printf( "%d ", xnew[i] );
-	}
-	printf( "\n" );
-
-
-	// Allocate memory for the message
+	// Use it on given message
 	if( stat( chiffre_file, &st ) == -1 ) {
 		printf( "ERROR: stat() returning -1.\n" );
 		return EXIT_FAILURE;
 	}
 	chiffre = malloc( st.st_size );
-	//read_chiffre( chiffre, chiffre_file );
+	chiffre_decrypted = malloc( st.st_size );
+	read_chiffre( chiffre, chiffre_file );
 
-	// Guess what? NOT WORKING! D:
-	stream_cipher( encrypted, (unsigned char*) plain );
-	printf( "----------\n" );
-	printf( "%s\n", encrypted );
-	printf( "----------\n" );
-	stream_cipher( decrypted, encrypted );
-	printf( "%s\n", decrypted );
-	printf( "----------\n" );
+	printf( "%s\n----------\n", chiffre );
+	stream_cipher( chiffre_decrypted, chiffre );
+	printf( "%s\n----------\n", chiffre_decrypted );
 
 	free( chiffre );
+	free( chiffre_decrypted );
 	return EXIT_SUCCESS;
 }
