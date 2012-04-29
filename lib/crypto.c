@@ -158,3 +158,34 @@ int EulerPhi( int n ) {
 int lcg( int seed, int a, int b, int m ) {
 	return modulo( ( a * seed + b ), m );
 }
+
+
+
+// Exercise 3
+
+
+/**
+ * Extended euclidien algorithm.
+ * @param unsigned long long a
+ * @param unsigned long long b
+ * @param long long *x
+ * @param long long *y
+ * @return unsigned long long
+ */
+unsigned long long eEA1S12( unsigned long long a,
+		unsigned long long b, long long *x, long long *y ) {
+	long long ggT, q, r,
+		u = 1, v = 0, s = 0, t = 1;
+
+	while( b > 0 ) {
+		q = a / b;
+		r = a - q * b; a = b; b = r;
+		r = u - q * s; u = s; s = r;
+		r = v - q * t; v = t; t = r;
+	}
+	ggT = a;
+	*x = u;
+	*y = v;
+
+	return ggT;
+}
