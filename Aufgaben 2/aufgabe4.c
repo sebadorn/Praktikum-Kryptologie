@@ -31,14 +31,15 @@ void shift_register_8( int dest[8], int x[8] ) {
 		0, 0, 0, 0, 0, 0, 0, 1,
 		1, 0, 0, 1, 0, 0, 0, 0
 	};
-	int i, j;
+	int i, j, idx;
 
 	for( i = 0; i < 8; i++ ) {
-		dest[i] = 0;
+		idx = 7 - i;
+		dest[idx] = 0;
 		for( j = 0; j < 8; j++ ) {
-			dest[i] += x[j] * T[i][j];
+			dest[idx] += x[j] * T[i][j];
 		}
-		dest[i] = dest[i] % 2;
+		dest[idx] = dest[idx] % 2;
 	}
 }
 
@@ -79,12 +80,13 @@ void stream_cipher( unsigned char *dest, unsigned char *plain ) {
 		x[i] = xstart[i];
 	}
 
+
 	for( i = 0; i < strlen( plain ); i++ ) {
 		// New key from the shift register
 		shift_register_8( key, x );
 
 		// Get bits of char
-		c = (unsigned int) plain[i] % 128;
+		c = (unsigned int) plain[i];
 		bit[0] = c / 128; c -= ( bit[0] * 128 );
 		bit[1] = c / 64;  c -= ( bit[1] * 64 );
 		bit[2] = c / 32;  c -= ( bit[2] * 32 );
@@ -103,8 +105,8 @@ void stream_cipher( unsigned char *dest, unsigned char *plain ) {
 			c += bit[j] * pow( 2.0, 7 - j );
 		}
 
-		dest[i] = (unsigned char) c % 128;
-		//printf( "%d -> %d\n", plain[i], c );
+		dest[i] = (unsigned char) c;
+		//printf( "%d -> %d\n", plain[i], dest[i] );
 
 		// Key will be seed for the next key
 		for( j = 0; j < 8; j++ ) {
@@ -113,24 +115,24 @@ void stream_cipher( unsigned char *dest, unsigned char *plain ) {
 	}
 
 	dest[i] = '\0';
-	//printf( "---------\n" );
 }
 
 
-int main( void ) {
+int main( int argc, char *argv[] ) {
 	struct stat st;
 	unsigned char *chiffre;
 	unsigned char *chiffre_decrypted;
 	unsigned char encrypted[strlen( plain ) + 1];
 	unsigned char decrypted[strlen( plain ) + 1];
 
+
 	// Test with encryption and decryption
 	stream_cipher( encrypted, plain );
 	printf( "----------\n" );
-	printf( "%s -> %s\n", plain, encrypted );
+	printf( "%s\n-> %s\n", plain, encrypted );
 	printf( "----------\n" );
 	stream_cipher( decrypted, encrypted );
-	printf( "%s -> %s\n", encrypted, decrypted );
+	printf( "%s\n-> %s\n", encrypted, decrypted );
 	printf( "----------\n" );
 
 	// Use it on given message
@@ -140,13 +142,15 @@ int main( void ) {
 	}
 	chiffre = malloc( st.st_size );
 	chiffre_decrypted = malloc( st.st_size );
+
 	read_chiffre( chiffre, chiffre_file );
 
-	printf( "%s\n----------\n", chiffre );
+	//printf( "%s\n----------\n", chiffre );
 	stream_cipher( chiffre_decrypted, chiffre );
 	printf( "%s\n----------\n", chiffre_decrypted );
 
-	free( chiffre );
+
 	free( chiffre_decrypted );
+	free( chiffre );
 	return EXIT_SUCCESS;
 }
