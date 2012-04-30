@@ -12,7 +12,7 @@
 
 const char chiffre_file[] = "chiffre-4.txt";
 unsigned char plain[] = "TheQuickBrownFoxJumpsOverTheLazyDog.";
-int xstart[8] = { 0, 1, 0, 1, 0, 1, 0, 1 };
+int xstart[8] = { 1, 0, 1, 0, 1, 0, 1, 0 };
 
 
 /**
@@ -37,10 +37,26 @@ void shift_register_8( int dest[8], int x[8] ) {
 		idx = 7 - i;
 		dest[idx] = 0;
 		for( j = 0; j < 8; j++ ) {
-			dest[idx] += x[j] * T[i][j];
+			dest[idx] += x[7 - j] * T[i][j];
 		}
 		dest[idx] = dest[idx] % 2;
 	}
+}
+
+
+/**
+ *
+ * @param int a[8]
+ * @return unsigned char
+ */
+unsigned char bits_to_char( int a[8] ) {
+	int i, c = 0;
+
+	for( i = 0; i < 8; i++ ) {
+		c += a[i] * pow( 2.0, 7 - i );
+	}
+
+	return (unsigned char) c;
 }
 
 
@@ -75,13 +91,15 @@ void read_chiffre( unsigned char *dest, const char *filename ) {
 void stream_cipher( unsigned char *dest, unsigned char *plain ) {
 	unsigned int x[8], key[8], bit[8];
 	unsigned int i, j, c;
+	unsigned char key_char;
 
 	for( i = 0; i < 8; i++ ) {
-		x[i] = xstart[i];
+		key[i] = xstart[i];
 	}
 
 
 	for( i = 0; i < strlen( plain ); i++ ) {
+		/*
 		// New key from the shift register
 		shift_register_8( key, x );
 
@@ -112,9 +130,17 @@ void stream_cipher( unsigned char *dest, unsigned char *plain ) {
 		for( j = 0; j < 8; j++ ) {
 			x[j] = key[j];
 		}
-	}
+		*/
 
-	dest[i] = '\0';
+		key_char = bits_to_char( key );
+
+		dest[i] = plain[i] ^ key_char;
+
+		for( j = 0; j < 8; j++ ) {
+			x[j] = key[j];
+		}
+		shift_register_8( key, x );
+	}
 }
 
 
