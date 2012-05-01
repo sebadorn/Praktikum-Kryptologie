@@ -23,3 +23,5 @@ extern unsigned long long EulPhiS12( unsigned long long n );
 extern unsigned long long DivS12( unsigned long long a, unsigned long long n );
 extern unsigned long long ModS12( unsigned long long a, unsigned long long n );
 extern unsigned long long ModInvS12( unsigned long long a, unsigned long long n );
+extern unsigned long long ModExpS12( unsigned long long a, unsigned long long b,
+		unsigned long long n );

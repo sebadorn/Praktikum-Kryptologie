@@ -429,3 +429,26 @@ unsigned long long ModInvS12( unsigned long long a, unsigned long long n ) {
 	}
 	return ModS12( x, n_orig );
 }
+
+
+/**
+ * Modular exponent.
+ * @param unsigned long long a
+ * @param unsigned long long b
+ * @param unsigned long long n
+ * @return unsigned long long
+ */
+unsigned long long ModExpS12( unsigned long long a, unsigned long long b,
+		unsigned long long n ) {
+	unsigned long long d = 1;
+
+	while( b > 0 ) {
+		if( b & 1 == 1 ) {
+			d = ( d * a ) % n;
+		}
+		b = b >> 1;
+		a = ( a * a ) % n;
+	}
+
+	return d;
+}

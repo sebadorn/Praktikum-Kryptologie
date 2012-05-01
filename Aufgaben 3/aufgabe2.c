@@ -16,6 +16,8 @@ int main( void ) {
 		l = 24877,
 		m = 65423, n = 705,
 		o = 416, p = 74371,
+		r = 249, s = 237, t = 528,
+		u = 85443,
 		count, tmp;
 	long long
 		*x = malloc( sizeof( long long ) ),
@@ -50,6 +52,10 @@ int main( void ) {
 	printf( "ModS12(%llu, %llu) = %llu\n", m, n, ModS12( m, n ) );
 
 	printf( "ModInvS12(%llu, %llu) = %llu\n", o, p, ModInvS12( o, p ) );
+
+	printf( "ModExpS12(%llu, %llu, %llu) = %llu\n", r, s, t, ModExpS12( r, s, t ) );
+
+	printf( "EulPhiS12(%llu) = %llu\n", u, EulPhiS12( u ) );
 
 	free( x );
 	free( y );
