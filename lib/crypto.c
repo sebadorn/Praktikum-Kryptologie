@@ -332,3 +332,21 @@ unsigned long long primeZS12( unsigned long long a, unsigned long long b ) {
 
 	return rand_prime;
 }
+
+
+/**
+ * Checks if n is a prime.
+ * @param unsigned long long n
+ * @return unsigned int 1 if n is a prime, 0 otherwise.
+ */
+unsigned int IsPrimeS12( unsigned long long n ) {
+	unsigned long long i;
+
+	for( i = 2; i < n; i++ ) {
+		if( n % i == 0 ) {
+			return 0;
+		}
+	}
+
+	return 1;
+}

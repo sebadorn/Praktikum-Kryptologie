@@ -19,3 +19,4 @@ extern unsigned long long eEAdS12( unsigned long long a, unsigned long long b,
 		unsigned long long d, long long *x, long long *y );
 extern unsigned long long prime1S12( unsigned long long n );
 extern unsigned long long primeZS12( unsigned long long a, unsigned long long b );
+extern unsigned int IsPrimeS12( unsigned long long n );
