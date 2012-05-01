@@ -17,9 +17,9 @@ void MultGroup( int n ) {
 
 int main( void ) {
 	int n = 36;
-	int t = EulerPhi( n );
+	unsigned long long t = EulPhiS12( n );
 
-	printf( "EulerPhi(%d) = %d\n", n, t );
+	printf( "EulPhiS12(%d) = %llu\n", n, t );
 	printf( "MultGroup(%d): ", n );
 	MultGroup( n );
 	printf( "\n" );

@@ -134,23 +134,6 @@ int modulo( int a, int b ) {
 
 
 /**
- * Euler's phi function.
- * @param int n
- * @return int Number of natural numbers smaller than n and coprime to n.
- */
-int EulerPhi( int n ) {
-	int i, ep = 0;
-
-	for( i = 0; i < n; i++ ) {
-		if( ggT( i, n ) == 1 ) {
-			ep++;
-		}
-	}
-	return ep;
-}
-
-
-/**
  * Linear Congruential Generator.
  * @param int seed Start value x0.
  * @param int a Multiplier.
@@ -385,4 +368,21 @@ unsigned long long primeNS12( unsigned long long **ptr, unsigned long long n ) {
 	}
 
 	return primes;
+}
+
+
+/**
+ * Euler's phi function.
+ * @param unsigned long long n
+ * @return unsigned long long Number of natural numbers smaller than n and coprime to n.
+ */
+unsigned long long EulPhiS12( unsigned long long n ) {
+	unsigned long long k, ep = 0;
+
+	for( k = 0; k < n; k++ ) {
+		if( ggT( k, n ) == 1 ) {
+			ep++;
+		}
+	}
+	return ep;
 }
