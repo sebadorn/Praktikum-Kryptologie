@@ -4,30 +4,6 @@
 #include "crypto.h"
 
 
-/**
- * ggT
- * @param int a
- * @param int b
- * @return int
- */
-int ggT( int a, int b ) {
-	if( b == 0 ) {
-		return a;
-	}
-	return ggT( b, modulo( a, b ) );
-}
-
-
-/**
- * kgV
- * @param int a
- * @param int b
- * @return int
- */
-int kgV( int a, int b ) {
-	return a * b / ggT( a, b );
-}
-
 
 /**
  * Modular inverse.
@@ -372,6 +348,31 @@ unsigned long long primeNS12( unsigned long long **ptr, unsigned long long n ) {
 
 
 /**
+ * Find the ggT using the (recursive) euclidean algorithm.
+ * @param unsigned long long a
+ * @param unsigned long long b
+ * @return unsigned long long
+ */
+unsigned long long ggTS12( unsigned long long a, unsigned long long b ) {
+	if( b == 0 ) {
+		return a;
+	}
+	return ggTS12( b, modulo( a, b ) );
+}
+
+
+/**
+ * Finds the kgV using the ggT (using the euclidean algorithm).
+ * @param unsigned long long a
+ * @param unsigned long long b
+ * @return unsigned long long
+ */
+unsigned long long kgVS12( unsigned long long a, unsigned long long b ) {
+	return a * b / ggTS12( a, b );
+}
+
+
+/**
  * Euler's phi function.
  * @param unsigned long long n
  * @return unsigned long long Number of natural numbers smaller than n and coprime to n.
@@ -380,7 +381,7 @@ unsigned long long EulPhiS12( unsigned long long n ) {
 	unsigned long long k, ep = 0;
 
 	for( k = 0; k < n; k++ ) {
-		if( ggT( k, n ) == 1 ) {
+		if( ggTS12( k, n ) == 1 ) {
 			ep++;
 		}
 	}
