@@ -10,7 +10,7 @@
 #include "../lib/crypto.h"
 
 
-const char chiffre_file[] = "chiffre-4.txt";
+const char chiffre_file[] = "cipher.txt";
 unsigned char plain[] = "TheQuickBrownFoxJumpsOverTheLazyDog.";
 int xstart[8] = { 1, 0, 1, 0, 1, 0, 1, 0 };
 
@@ -53,7 +53,8 @@ unsigned char bits_to_char( int a[8] ) {
 	int i, c = 0;
 
 	for( i = 0; i < 8; i++ ) {
-		c += a[i] * pow( 2.0, 7 - i );
+		//c += a[i] * pow( 2.0, 7 - i );
+		c += a[i] << ( 7 - i );
 	}
 
 	return (unsigned char) c;
@@ -162,6 +163,7 @@ int main( int argc, char *argv[] ) {
 	printf( "----------\n" );
 
 	// Use it on given message
+
 	if( stat( chiffre_file, &st ) == -1 ) {
 		printf( "ERROR: stat() returning -1.\n" );
 		return EXIT_FAILURE;
@@ -169,9 +171,10 @@ int main( int argc, char *argv[] ) {
 	chiffre = malloc( st.st_size );
 	chiffre_decrypted = malloc( st.st_size );
 
+	// Read message
 	read_chiffre( chiffre, chiffre_file );
 
-	//printf( "%s\n----------\n", chiffre );
+	// Decrypt it
 	stream_cipher( chiffre_decrypted, chiffre );
 	printf( "%s\n----------\n", chiffre_decrypted );
 

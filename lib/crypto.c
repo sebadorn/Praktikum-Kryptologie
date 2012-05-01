@@ -165,7 +165,7 @@ int lcg( int seed, int a, int b, int m ) {
 
 
 /**
- * Extended euclidien algorithm.
+ * Extended euclidean algorithm.
  * @param unsigned long long a
  * @param unsigned long long b
  * @param long long *x
@@ -188,4 +188,69 @@ unsigned long long eEA1S12( unsigned long long a,
 	*y = v;
 
 	return ggT;
+}
+
+
+/**
+ * eEAdS12
+ * @param unsigned long long a
+ * @param unsigned long long b
+ * @param unsigned long long d
+ * @param long long *x
+ * @param long long *y
+ * @return unsigned long long
+ */
+unsigned long long eEAdS12( unsigned long long a, unsigned long long b,
+		unsigned long long d, long long *x, long long *y ) {
+	long long ggT, q, r,
+		u = 1, v = 0, s = 0, t = 1;
+
+	while( b > 0 ) {
+		q = a / b;
+		r = a - q * b; a = b; b = r;
+		r = u - q * s; u = s; s = r;
+		r = v - q * t; v = t; t = r;
+	}
+	ggT = a;
+
+	s = d / ggT;
+	if( d == 0 ) {
+		return 0;
+	}
+	*x = s * u;
+	*y = s * v;
+
+	return ggT;
+}
+
+
+/**
+ * Returns the value of the n-th prime number.
+ * @param unsigned long long n
+ * @return unsigned long long
+ */
+unsigned long long prime1S12( unsigned long long n ) {
+	int flag_is_prime;
+	unsigned long long i, j, primes_found = 0, nth_prime = 0;
+
+	i = 2;
+	while( nth_prime == 0 ) {
+		flag_is_prime = 1;
+		for( j = 2; j < i; j++ ) {
+			if( i % j == 0 ) {
+				flag_is_prime = -1;
+				break;
+			}
+		}
+
+		if( flag_is_prime == 1 ) {
+			primes_found++;
+			if( primes_found == n ) {
+				nth_prime = i;
+			}
+		}
+		i += ( i == 2 ) ? 1 : 2;
+	}
+
+	return nth_prime;
 }
