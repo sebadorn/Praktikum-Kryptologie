@@ -6,24 +6,6 @@
 
 
 /**
- * Modular inverse.
- * @param int a
- * @param int n
- * @return int
- */
-int ModInv( int a, int n ) {
-	int i;
-
-	for( i = 1; i < n - 1; i++ ) {
-		if( modulo( i * a, n ) == 1 ) {
-			return i;
-		}
-	}
-	return 0;
-}
-
-
-/**
  * Calculate determinant of a 2x2 matrix.
  * @param const int a[2][2]
  * @return int Determinant of matrix.
@@ -56,9 +38,10 @@ int matrix_det_3x3( const int a[3][3] ) {
  * @param int modn
  */
 void matrix_inv_2x2( int dest[2][2], const int src[2][2], int modn ) {
-	int i, j, f;
-
-	f = ModInv( matrix_det_2x2( src ), modn );
+	unsigned long long f = ModInvS12(
+		(unsigned long long) matrix_det_2x2( src ),
+		(unsigned long long) modn
+	);
 
 	dest[0][0] = f * src[1][1];
 	dest[0][1] = -f * src[0][1];
@@ -74,9 +57,10 @@ void matrix_inv_2x2( int dest[2][2], const int src[2][2], int modn ) {
  * @param int modn
  */
 void matrix_inv_3x3( int dest[3][3], const int src[3][3], int modn ) {
-	int i, j, f;
-
-	f = ModInv( matrix_det_3x3( src ), modn );
+	unsigned long long f = ModInvS12(
+		(unsigned long long) matrix_det_3x3( src ),
+		(unsigned long long) modn
+	);
 
 	dest[0][0] = f * ( src[1][1] * src[2][2] - src[1][2] * src[2][1] );
 	dest[0][1] = f * ( src[0][2] * src[2][1] - src[0][1] * src[2][2] );
@@ -387,4 +371,61 @@ unsigned long long EulPhiS12( unsigned long long n ) {
 		}
 	}
 	return ep;
+}
+
+
+/**
+ * DivS12. Seems a little pointless?
+ * @param unsigned long long a
+ * @param unsigned long long n
+ * @return unsigned long long
+ */
+unsigned long long DivS12( unsigned long long a, unsigned long long n ) {
+	return a / n;
+}
+
+
+/**
+ * ModS12.
+ * @param unsigned long long a
+ * @param unsigned long long n
+ * @return unsigned long long
+ */
+unsigned long long ModS12( unsigned long long a, unsigned long long n ) {
+	//return ( a % n + n ) % n; // If negative were possible.
+	return a % n;
+}
+
+
+/**
+ * Modular inverse using the extended euclidean algorithm.
+ * @param unsigned long long a
+ * @param unsigned long long n
+ * @return unsigned long long
+ */
+unsigned long long ModInvS12( unsigned long long a, unsigned long long n ) {
+	unsigned long long n_orig = n, r;
+	long long
+		x = 0, y = 1,
+		u = 1, v = 0,
+		b, m;
+	double q;
+
+	while( a != 0 ) {
+		q = n / a;
+		r = ModS12( n, a );
+		m = x - u * q;
+		b = y - v * q;
+		n = a;
+		a = r;
+		x = u;
+		y = v;
+		u = m;
+		v = b;
+	}
+
+	if( n != 1 ) {
+		return 0;
+	}
+	return ModS12( x, n_orig );
 }

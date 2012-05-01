@@ -5,7 +5,6 @@
 #include "../lib/crypto.h"
 
 
-
 int main( void ) {
 	unsigned long long
 		a = 45948, b = 32576,
@@ -15,6 +14,8 @@ int main( void ) {
 		i = 0, j = 10,
 		k = 10,
 		l = 24877,
+		m = 65423, n = 705,
+		o = 416, p = 74371,
 		count, tmp;
 	long long
 		*x = malloc( sizeof( long long ) ),
@@ -44,6 +45,11 @@ int main( void ) {
 	printf( "\n" );
 
 	printf( "IsPrimeS12(%llu) = %d\n", l, IsPrimeS12( l ) );
+
+	printf( "DivS12(%llu, %llu) = %llu\n", m, n, DivS12( m, n ) );
+	printf( "ModS12(%llu, %llu) = %llu\n", m, n, ModS12( m, n ) );
+
+	printf( "ModInvS12(%llu, %llu) = %llu\n", o, p, ModInvS12( o, p ) );
 
 	free( x );
 	free( y );
