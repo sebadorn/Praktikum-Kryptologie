@@ -19,6 +19,8 @@ extern unsigned long long prime1S12( unsigned long long n );
 extern unsigned long long primeZS12( unsigned long long a, unsigned long long b );
 extern unsigned long long primeNS12( unsigned long long **ptr, unsigned long long n );
 extern unsigned int IsPrimeS12( unsigned long long n );
+extern unsigned long long RandS12( unsigned long long seed, unsigned long long a,
+		unsigned long long b, unsigned long long m );
 extern unsigned long long ggTS12( unsigned long long a, unsigned long long b );
 extern unsigned long long kgVS12( unsigned long long a, unsigned long long b );
 extern unsigned long long EulPhiS12( unsigned long long n );

@@ -4,23 +4,24 @@
 #include "../lib/crypto.h"
 
 
-void MultGroup( int n ) {
-	int i;
+void MultGroup( unsigned long long n ) {
+	unsigned long long i;
 
 	for( i = 1; i < n; i++ ) {
-		if( ggT( i, n ) == 1 ) {
-			printf( "%d ", i );
+		if( ggTS12( i, n ) == 1 ) {
+			printf( "%llu ", i );
 		}
 	}
 }
 
 
 int main( void ) {
-	int n = 36;
-	unsigned long long t = EulPhiS12( n );
+	unsigned long long
+		n = 36,
+		t = EulPhiS12( n );
 
-	printf( "EulPhiS12(%d) = %llu\n", n, t );
-	printf( "MultGroup(%d): ", n );
+	printf( "EulPhiS12(%llu) = %llu\n", n, t );
+	printf( "MultGroup(%llu): ", n );
 	MultGroup( n );
 	printf( "\n" );
 

@@ -28,17 +28,16 @@ int bbs( int stop ) {
 
 
 int main( void ) {
-	int m = 259200;
-	int a = 7141;
-	int b = 54773;
-	int xold = 141421;
-	int xnew;
+	unsigned long long
+		m = 259200,
+		a = 7141, b = 54773,
+		xold = 141421, xnew;
 	int i, r, stop = 20;
 
 	printf( "# lcg:\n" );
 	for( i = 0; i < stop; i++ ) {
-		xnew = lcg( xold, a, b, m );
-		printf( "lcg(%d, %d, %d, %d) = %d\n", xold, a, b, m, xnew );
+		xnew = RandS12( xold, a, b, m );
+		printf( "lcg(%llu, %llu, %llu, %llu) = %llu\n", xold, a, b, m, xnew );
 		xold = xnew;
 	}
 	printf( "\n" );

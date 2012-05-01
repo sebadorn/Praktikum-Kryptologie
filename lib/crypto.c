@@ -110,19 +110,6 @@ int modulo( int a, int b ) {
 
 
 /**
- * Linear Congruential Generator.
- * @param int seed Start value x0.
- * @param int a Multiplier.
- * @param int b Increment.
- * @param int m Modulus.
- * @return int Pseudo-random value.
- */
-int lcg( int seed, int a, int b, int m ) {
-	return modulo( ( a * seed + b ), m );
-}
-
-
-/**
  * Count number of primes in an interval.
  * @param unsigned long long a Interval start.
  * @param unsigned long long b Interval end.
@@ -344,6 +331,20 @@ unsigned long long primeNS12( unsigned long long **ptr, unsigned long long n ) {
 	}
 
 	return primes;
+}
+
+
+/**
+ * Linear Congruential Generator.
+ * @param unsigned long long seed Start value x0.
+ * @param unsigned long long a Multiplier.
+ * @param unsigned long long b Increment.
+ * @param unsigned long long m Modulus.
+ * @return unsigned long long Pseudo-random value.
+ */
+unsigned long long RandS12( unsigned long long seed, unsigned long long a,
+		unsigned long long b, unsigned long long m ) {
+	return modulo( ( a * seed + b ), m );
 }
 
 
