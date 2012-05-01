@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "crypto.h"
 
@@ -349,4 +350,39 @@ unsigned int IsPrimeS12( unsigned long long n ) {
 	}
 
 	return 1;
+}
+
+
+/**
+ * Calculates all primes p with 2 <= p <= n.
+ * @param unsigned long long **ptr
+ * @param unsigned long long n
+ * @return unsigned long long Number of primes p <= n.
+ */
+unsigned long long primeNS12( unsigned long long **ptr, unsigned long long n ) {
+	unsigned long long
+		i, j, p = 0, sieve[n + 1],
+		primes = AnzPrime( 2, n );
+
+	*ptr = calloc( primes, sizeof( unsigned long long ) );
+
+	if( *ptr == NULL ) {
+		printf( "Memory allocation for ptr failed.\n" );
+	}
+
+
+	for( i = 2; i <= n; i++ ) {
+		sieve[i] = 1;
+	}
+
+	for( i = 2; i <= n; i++ ) {
+		if( sieve[i] == 1 ) {
+			(*ptr)[p++] = i;
+			for( j = i * i; j <= n; j += i ) {
+				sieve[j] = 0;
+			}
+		}
+	}
+
+	return primes;
 }
