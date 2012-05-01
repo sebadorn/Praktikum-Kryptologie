@@ -9,6 +9,8 @@ extern void matrix_inv_3x3( int dest[3][3], const int src[3][3], int modn );
 
 extern int modulo( int a, int b );
 
+extern unsigned long long AnzPrime( unsigned long long a, unsigned long long b );
+
 extern int EulerPhi( int n );
 extern int lcg( int seed, int a, int b, int m );
 extern unsigned long long eEA1S12( unsigned long long a,
@@ -16,3 +18,4 @@ extern unsigned long long eEA1S12( unsigned long long a,
 extern unsigned long long eEAdS12( unsigned long long a, unsigned long long b,
 		unsigned long long d, long long *x, long long *y );
 extern unsigned long long prime1S12( unsigned long long n );
+extern unsigned long long primeZS12( unsigned long long a, unsigned long long b );

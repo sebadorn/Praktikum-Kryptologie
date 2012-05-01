@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #include "crypto.h"
 
 
@@ -160,6 +162,35 @@ int lcg( int seed, int a, int b, int m ) {
 }
 
 
+/**
+ * Count number of primes in an interval.
+ * @param unsigned long long a Interval start.
+ * @param unsigned long long b Interval end.
+ * @return unsigned long long Number of primes in the given interval.
+ */
+unsigned long long AnzPrime( unsigned long long a, unsigned long long b ) {
+	unsigned long long i, j, count = 0;
+	unsigned long long sieve[b + 1];
+
+	for( i = 2; i <= b; i++ ) {
+		sieve[i] = 1;
+	}
+
+	for( i = 2; i <= b; i++ ) {
+		if( sieve[i] == 1 ) {
+			if( i >= a ) {
+				count++;
+			}
+			for( j = i * i; j <= b; j += i ) {
+				sieve[j] = 0;
+			}
+		}
+	}
+
+	return count;
+}
+
+
 
 // Exercise 3
 
@@ -253,4 +284,51 @@ unsigned long long prime1S12( unsigned long long n ) {
 	}
 
 	return nth_prime;
+}
+
+
+/**
+ * Return randomly chosen prime number from the given interval [a, b].
+ * @param unsigned long long a Interval (inclusive) start.
+ * @param unsigned long long b Interval (inclusive) end.
+ * @return unsigned long long Randomly chosen prime number.
+ */
+unsigned long long primeZS12( unsigned long long a, unsigned long long b ) {
+	unsigned long long
+		i, j, count = 0, sieve[b + 1],
+		rand_prime, take_nth_prime;
+
+	srand( time( NULL ) );
+
+	// Init sieve.
+	for( i = 2; i <= b; i++ ) {
+		sieve[i] = 1;
+	}
+
+	// Cross out not-primes
+	for( i = 2; i <= b; i++ ) {
+		if( sieve[i] == 1 ) {
+			if( i >= a ) {
+				count++;
+			}
+			for( j = i * i; j <= b; j += i ) {
+				sieve[j] = 0;
+			}
+		}
+	}
+
+	// Take one of the found primes
+	take_nth_prime = rand() % count;
+	j = 0;
+	for( i = 0; i <= b; i++ ) {
+		if( sieve[i] == 1 ) {
+			if( j == take_nth_prime ) {
+				rand_prime = i;
+				break;
+			}
+			j++;
+		}
+	}
+
+	return rand_prime;
 }
