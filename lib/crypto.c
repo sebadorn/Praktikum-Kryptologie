@@ -333,7 +333,7 @@ unsigned long long RandS12( unsigned long long seed, unsigned long long a,
 
 
 /**
- * Find the ggT using the (recursive) euclidean algorithm.
+ * Find the ggT using the euclidean algorithm.
  * @param unsigned long long a
  * @param unsigned long long b
  * @return unsigned long long
@@ -363,7 +363,15 @@ unsigned long long kgVS12( unsigned long long a, unsigned long long b ) {
  * @return unsigned long long Number of natural numbers smaller than n and coprime to n.
  */
 unsigned long long EulPhiS12( unsigned long long n ) {
-	unsigned long long k, ep = 0;
+	unsigned long long k, m, ep = 0;
+
+	if( n < 2 ) {
+		return 0;
+	}
+
+	if( IsPrimeS12( n ) ) {
+		return n - 1;
+	}
 
 	for( k = 0; k < n; k++ ) {
 		if( ggTS12( k, n ) == 1 ) {
