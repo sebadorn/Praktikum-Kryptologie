@@ -6,6 +6,7 @@
 
 int main( void ) {
 	unsigned long long
+		i,
 		// Part a)
 		x = 7323,
 		y = 2469,
@@ -15,7 +16,7 @@ int main( void ) {
 		s1, s2,
 		// Part b)
 		n = 13439,
-		p, q;
+		p, q, m;
 
 	// Part a)
 	printf( "Part a)\n ----- ----- \n" );
@@ -45,7 +46,26 @@ int main( void ) {
 	printf( "\nPart b)\n ----- ----- \n" );
 
 	// Step 1: n = p * q
+	for( i = 2; i < n; i++ ) {
+		if( n % i == 0 && IsPrimeS12( i ) ) {
+			q = i;
+			p = n / q;
+			break;
+		}
+	}
+	printf( "Step 1: p = %llu  q = %llu\n", p, q );
 
+	// Step 2: m = p^2
+	m = p * p;
+	printf( "Step 2: m = %llu\n", m );
+
+	// Step 3: EulerPhi(m)
+	eulphi = EulPhiS12( m );
+	printf( "Step 3: eulphi = %llu\n", eulphi );
+
+	// Step 4: a = p^2 * (1 - 1 / p)
+	a = p * p * ( 1 - 1 / p );
+	printf( "Step 4: a = %llu\n", a );
 
 
 	return EXIT_SUCCESS;
