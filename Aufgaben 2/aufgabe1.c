@@ -15,6 +15,90 @@ const int KEY[DIM][DIM] = { 0, 1, 7, 15 };
 
 
 /**
+ * Modular inverse.
+ * @param int a
+ * @param int n
+ * @return int
+ */
+int ModInv( int a, int n ) {
+	int i;
+
+	for( i = 1; i < n - 1; i++ ) {
+		if( modulo( i * a, n ) == 1 ) {
+			return i;
+		}
+	}
+	return 0;
+}
+
+
+/**
+ * Calculate determinant of a 2x2 matrix.
+ * @param const int a[2][2]
+ * @return int Determinant of matrix.
+ */
+int matrix_det_2x2( const int a[2][2] ) {
+	return a[0][0] * a[1][1] - a[0][1] * a[1][0];
+}
+
+
+/**
+ * Calculate determinant of a 3x3 matrix.
+ * @param const int a[3][3]
+ * @return int Determinant of matrix.
+ */
+int matrix_det_3x3( const int a[3][3] ) {
+	int plus = a[0][0] * a[1][1] * a[2][2]
+			 + a[0][1] * a[1][2] * a[2][0]
+			 + a[0][2] * a[1][0] * a[2][1];
+	int minus = a[0][2] * a[1][1] * a[2][0]
+			 + a[1][2] * a[2][1] * a[0][0]
+			 + a[2][2] * a[0][1] * a[1][0];
+	return plus - minus;
+}
+
+
+/**
+ * Invert a 2x2 matrix.
+ * @param int dest[2][2]
+ * @param int src[2][2]
+ * @param int modn
+ */
+void matrix_modinv_2x2( int dest[2][2], const int src[2][2], int modn ) {
+	int f = ModInv( matrix_det_2x2( src ), modn );
+
+	dest[0][0] = f * src[1][1];
+	dest[0][1] = -f * src[0][1];
+	dest[1][0] = -f * src[1][0];
+	dest[1][1] = f * src[0][0];
+}
+
+
+/**
+ * Invert a 3x3 matrix.
+ * @param int dest[3][3]
+ * @param int src[3][3]
+ * @param int modn
+ */
+void matrix_modinv_3x3( int dest[3][3], const int src[3][3], int modn ) {
+	int f = ModInv( matrix_det_3x3( src ), modn );
+
+	dest[0][0] = f * ( src[1][1] * src[2][2] - src[1][2] * src[2][1] );
+	dest[0][1] = f * ( src[0][2] * src[2][1] - src[0][1] * src[2][2] );
+	dest[0][2] = f * ( src[0][1] * src[1][2] - src[0][2] * src[1][1] );
+
+	dest[1][0] = f * ( src[1][2] * src[2][0] - src[1][0] * src[2][2] );
+	dest[1][1] = f * ( src[0][0] * src[2][2] - src[0][2] * src[2][0] );
+	dest[1][2] = f * ( src[0][2] * src[1][0] - src[0][0] * src[1][2] );
+
+	dest[2][0] = f * ( src[1][0] * src[2][1] - src[1][1] * src[2][0] );
+	dest[2][1] = f * ( src[2][0] * src[0][1] - src[0][0] * src[2][1] );
+	dest[2][2] = f * ( src[0][0] * src[1][1] - src[0][1] * src[1][0] );
+}
+
+
+
+/**
  * Multiply two matrices (or a matrix and a vector).
  * @param int *dest Matrix with the result.
  * @param int *a Matrix a.
@@ -64,10 +148,10 @@ int matrix_det( const int a[DIM][DIM] ) {
 void matrix_inv( int dest[DIM][DIM], const int src[DIM][DIM] ) {
 	switch( DIM ) {
 		case 2:
-			matrix_inv_2x2( (int (*)[2]) dest, (const int (*)[2]) src, MODN );
+			matrix_modinv_2x2( (int (*)[2]) dest, (const int (*)[2]) src, MODN );
 			break;
 		case 3:
-			matrix_inv_3x3( (int (*)[3]) dest, (const int (*)[3]) src, MODN );
+			matrix_modinv_3x3( (int (*)[3]) dest, (const int (*)[3]) src, MODN );
 			break;
 		default:
 			printf( "ERROR: Matrix in form %dx%d not supported.\n", DIM, DIM );
