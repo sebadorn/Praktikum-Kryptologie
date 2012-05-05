@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 #include "../lib/crypto.h"
 
@@ -17,6 +18,7 @@ int main( void ) {
 		// Part b)
 		n = 13439,
 		p, q, m;
+	long long phi_n, h, rt;
 
 	// Part a)
 	printf( "Part a)\n ----- ----- \n" );
@@ -27,7 +29,7 @@ int main( void ) {
 
 	// Step 2: EulerPhi(z)
 	eulphi = EulPhiS12( z );
-	printf( "Step 2: eulphi = %llu\n", eulphi );
+	printf( "Step 2: phi(z) = %llu\n", eulphi );
 
 	// Step 3: r = b mod EulerPhi(z)
 	r = ModS12( b, eulphi );
@@ -46,6 +48,12 @@ int main( void ) {
 	printf( "\nPart b)\n ----- ----- \n" );
 
 	// Step 1: n = p * q
+	phi_n = EulPhiS12( n );
+	h = phi_n - n - 1;
+	rt = sqrt( pow( h / 2, 2 ) - n );
+	p = - h / 2 + rt;
+	q = - h / 2 - rt;
+	/* sub-optimal:
 	for( i = 2; i < n; i++ ) {
 		if( n % i == 0 && IsPrimeS12( i ) ) {
 			q = i;
@@ -53,6 +61,7 @@ int main( void ) {
 			break;
 		}
 	}
+	*/
 	printf( "Step 1: p = %llu  q = %llu\n", p, q );
 
 	// Step 2: m = p^2
@@ -61,10 +70,10 @@ int main( void ) {
 
 	// Step 3: EulerPhi(m)
 	eulphi = EulPhiS12( m );
-	printf( "Step 3: eulphi = %llu\n", eulphi );
+	printf( "Step 3: phi(m) = %llu\n", eulphi );
 
 	// Step 4: a = p^2 * (1 - 1 / p)
-	a = p * p * ( 1 - 1 / p );
+	a = p * ( p - 1 );
 	printf( "Step 4: a = %llu\n", a );
 
 
