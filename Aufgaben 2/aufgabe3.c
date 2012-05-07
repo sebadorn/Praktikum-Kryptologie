@@ -8,7 +8,7 @@
  * Blum Blum Shub generator.
  * @param int stop Number of numbers to generate.
  */
-int bbs( int stop ) {
+void bbs( int stop ) {
 	int p = 11; // prime
 	int q = 19; // prime
 	int s = 3; // seed
@@ -32,7 +32,7 @@ int main( void ) {
 		m = 259200,
 		a = 7141, b = 54773,
 		xold = 141421, xnew;
-	int i, r, stop = 20;
+	int i, stop = 20;
 
 	printf( "# lcg:\n" );
 	for( i = 0; i < stop; i++ ) {

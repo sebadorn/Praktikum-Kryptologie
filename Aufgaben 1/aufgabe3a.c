@@ -39,7 +39,6 @@ void read_msg_file( char *msg_before, char *filename ) {
 int main( int argc, char *argv[] ) {
 	char *msg_before;
 	char *filename;
-	char c;
 	struct stat st;
 	int shift;
 	int i;

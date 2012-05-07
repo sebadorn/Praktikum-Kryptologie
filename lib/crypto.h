@@ -1,6 +1,7 @@
 extern int modulo( int a, int b );
 
 extern unsigned long long AnzPrime( unsigned long long a, unsigned long long b );
+extern long long matrix_det( long long **a, unsigned int n );
 
 extern unsigned long long eEA1S12( unsigned long long a,
 		unsigned long long b, long long *x, long long *y );

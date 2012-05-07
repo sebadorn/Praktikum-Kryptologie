@@ -36,7 +36,7 @@ void Prime( int a, int b ) {
  * @return int
  */
 int IsPrime( int z ) {
-	int i, j, is_prime = -1;
+	int i, j;
 	int sieve[z + 1];
 
 	for( i = 2; i <= z; i++ ) {

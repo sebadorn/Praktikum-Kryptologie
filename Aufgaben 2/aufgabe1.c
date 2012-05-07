@@ -9,7 +9,10 @@
 
 const char SECRET_TEXT[] = "UBIXGTENERHLNHAHRM";
 //const char SECRET_TEXT[] = "HELP"; // Wikipedia example
-const int KEY[DIM][DIM] = { 0, 1, 7, 15 };
+const int KEY[DIM][DIM] = {
+	{ 0, 1 },
+	{ 7, 15 }
+};
 //const int KEY[DIM][DIM] = { 3, 3, 2, 5 }; // Wikipedia example
 
 
@@ -114,27 +117,6 @@ void matrix_mult( int *dest, int *a, const int b[DIM][DIM], int rows, int cols )
 		for( j = 0; j < cols; j++ ) {
 			dest[i] += b[i][j] * a[j];
 		}
-	}
-}
-
-
-/**
- * Calculate determinant of a matrix.
- * Works only for the cases 2x2 and 3x3.
- * @param const int a[DIM][DIM]
- * @param int rows
- * @param int cols
- * @return int Determinant of matrix.
- */
-int matrix_det( const int a[DIM][DIM] ) {
-	switch( DIM ) {
-		case 2:
-			return matrix_det_2x2( (const int (*)[2]) a );
-		case 3:
-			return matrix_det_3x3( (const int (*)[3]) a );
-		default:
-			printf( "ERROR: Matrix in form %dx%d not supported.\n", DIM, DIM );
-			exit( EXIT_FAILURE );
 	}
 }
 

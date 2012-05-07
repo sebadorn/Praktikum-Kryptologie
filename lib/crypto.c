@@ -1,5 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
+#include <time.h>
 
 #include "crypto.h"
 
@@ -48,6 +50,64 @@ unsigned long long AnzPrime( unsigned long long a, unsigned long long b ) {
 	}
 
 	return count;
+}
+
+
+/**
+ * Calculate determinant of a n x n matrix.
+ * @param long long **a Matrix.
+ * @param unsigned int n Length of matrix.
+ * @return long long Determinant of matrix.
+ */
+long long matrix_det( long long **a, unsigned int n ) {
+	long long det, i, j, k, l;
+	long long **m = NULL;
+
+	// Not possible
+	if( n < 1 ) {
+		printf( "ERROR: Matrix cannot be smaller than n = 1!" );
+		exit( EXIT_FAILURE );
+	}
+
+	// 1 x 1
+	if( n == 1 ) {
+		det = a[0][0];
+	}
+	// 2 x 2
+	else if( n == 2 ) {
+		det = a[0][0] * a[1][1] - a[1][0] * a[0][1];
+	}
+	// n x n
+	else {
+		det = 0;
+		for( i = 0; i < n; i++ ) {
+			// Get memory for temporary matrix
+			m = malloc( ( n - 1 ) * sizeof( long long *) );
+			for( j = 0; j < n; j++ ) {
+				m[j] = malloc( ( n - 1 ) * sizeof( long long ) );
+			}
+
+			for( j = 1; j < n - 1; j++ ) {
+				k = 0;
+				for( l = 0; l < n; l++ ) {
+					if( l == i ) {
+						continue;
+					}
+					m[j - 1][k] = a[j][l];
+					k++;
+				}
+			}
+
+			det += pow( -1.0, 2.0 + i ) * a[0][i] * matrix_det( m, n - 1 );
+
+			for( j = 0; j < n - 1; j++ ) {
+				free( m[j] );
+			}
+			free( m );
+		}
+	}
+
+	return det;
 }
 
 
@@ -292,7 +352,7 @@ unsigned long long kgVS12( unsigned long long a, unsigned long long b ) {
  * @return unsigned long long Number of natural numbers smaller than n and coprime to n.
  */
 unsigned long long EulPhiS12( unsigned long long n ) {
-	unsigned long long k, m, ep = 0;
+	unsigned long long k, ep = 0;
 
 	if( n < 2 ) {
 		return 0;
@@ -381,7 +441,7 @@ unsigned long long ModExpS12( unsigned long long a, unsigned long long b,
 	unsigned long long d = 1;
 
 	while( b > 0 ) {
-		if( b & 1 == 1 ) {
+		if( ( b & 1 ) == 1 ) {
 			d = ( d * a ) % n;
 		}
 		b = b >> 1;

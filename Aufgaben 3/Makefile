@@ -6,10 +6,10 @@ CRYPTOLIB = ../lib/crypto
 all: $(PROGS)
 
 cryptolib: $(CRYPTOLIB).c
-	$(CC) -c $(CRYPTOLIB).c -o $(CRYPTOLIB).o
+	$(CC) -c -Wall $(CRYPTOLIB).c -o $(CRYPTOLIB).o
 
 %.out: %.c
-	$(CC) -g -lm $< -o $@ $(CRYPTOLIB).o
+	$(CC) -g -lm -Wall $< -o $@ $(CRYPTOLIB).o
 
 .PHONY: clean
 

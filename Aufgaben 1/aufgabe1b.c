@@ -7,7 +7,7 @@ int main( int argc, char *argv[] ) {
 	char *outputfile;
 	FILE *infile;
 	FILE *outfile;
-	char *c;
+	char *c = NULL;
 
 	// Get file names
 	if( argc >= 3 ) {

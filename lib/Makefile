@@ -4,7 +4,7 @@ NAME = crypto
 all: $(NAME).o
 
 $(NAME).o: $(NAME).c
-	$(CC) -c $(NAME).c -o $(NAME).o
+	$(CC) -c -Wall $(NAME).c -o $(NAME).o
 
 .PHONY: clean
 

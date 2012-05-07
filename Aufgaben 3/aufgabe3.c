@@ -7,7 +7,6 @@
 
 int main( void ) {
 	unsigned long long
-		i,
 		// Part a)
 		x = 7323,
 		y = 2469,

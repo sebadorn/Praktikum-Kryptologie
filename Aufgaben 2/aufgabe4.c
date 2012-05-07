@@ -11,7 +11,7 @@
 
 
 const char chiffre_file[] = "cipher.txt";
-unsigned char plain[] = "TheQuickBrownFoxJumpsOverTheLazyDog.";
+const char plain[] = "TheQuickBrownFoxJumpsOverTheLazyDog.";
 int xstart[8] = { 1, 0, 1, 0, 1, 0, 1, 0 };
 
 
@@ -20,16 +20,16 @@ int xstart[8] = { 1, 0, 1, 0, 1, 0, 1, 0 };
  * @param int dest[8]
  * @param int x[8]
  */
-void shift_register_8( int dest[8], int x[8] ) {
+void shift_register_8( unsigned int dest[8], unsigned int x[8] ) {
 	int T[8][8] = {
-		0, 1, 0, 0, 0, 0, 0, 0,
-		0, 0, 1, 0, 0, 0, 0, 0,
-		0, 0, 0, 1, 0, 0, 0, 0,
-		0, 0, 0, 0, 1, 0, 0, 0,
-		0, 0, 0, 0, 0, 1, 0, 0,
-		0, 0, 0, 0, 0, 0, 1, 0,
-		0, 0, 0, 0, 0, 0, 0, 1,
-		1, 0, 0, 1, 0, 0, 0, 0
+		{ 0, 1, 0, 0, 0, 0, 0, 0 },
+		{ 0, 0, 1, 0, 0, 0, 0, 0 },
+		{ 0, 0, 0, 1, 0, 0, 0, 0 },
+		{ 0, 0, 0, 0, 1, 0, 0, 0 },
+		{ 0, 0, 0, 0, 0, 1, 0, 0 },
+		{ 0, 0, 0, 0, 0, 0, 1, 0 },
+		{ 0, 0, 0, 0, 0, 0, 0, 1 },
+		{ 1, 0, 0, 1, 0, 0, 0, 0 }
 	};
 	int i, j, idx;
 
@@ -49,7 +49,7 @@ void shift_register_8( int dest[8], int x[8] ) {
  * @param int a[8]
  * @return unsigned char
  */
-unsigned char bits_to_char( int a[8] ) {
+unsigned char bits_to_char( unsigned int a[8] ) {
 	int i, c = 0;
 
 	for( i = 0; i < 8; i++ ) {
@@ -90,8 +90,9 @@ void read_chiffre( unsigned char *dest, const char *filename ) {
  * @param unsigned char *plain
  */
 void stream_cipher( unsigned char *dest, unsigned char *plain ) {
-	unsigned int x[8], key[8], bit[8];
-	unsigned int i, j, c;
+	unsigned int x[8], key[8];
+	//unsigned int bit[8], c;
+	unsigned int i, j;
 	unsigned char key_char;
 
 	for( i = 0; i < 8; i++ ) {
@@ -99,7 +100,7 @@ void stream_cipher( unsigned char *dest, unsigned char *plain ) {
 	}
 
 
-	for( i = 0; i < strlen( plain ); i++ ) {
+	for( i = 0; i < strlen( (const char *)plain ); i++ ) {
 		/*
 		// New key from the shift register
 		shift_register_8( key, x );
@@ -154,7 +155,7 @@ int main( int argc, char *argv[] ) {
 
 
 	// Test with encryption and decryption
-	stream_cipher( encrypted, plain );
+	stream_cipher( encrypted, (unsigned char *)plain );
 	printf( "----------\n" );
 	printf( "%s\n-> %s\n", plain, encrypted );
 	printf( "----------\n" );
