@@ -41,6 +41,7 @@ int main( void ) {
 	det = matrix_det( a, 3, mod );
 	printf( "----- ----- \n" );
 	printf( "det(A) %% %d = %lld\n", mod, det );
+	printf( "ModInv( det(A), %d ) = %lld\n", mod, ModInvS12( det, mod ) );
 
 	// Invert matrix
 	matrix_inv( a_inv, a, 3, mod );

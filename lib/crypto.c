@@ -327,13 +327,16 @@ unsigned long long DivS12( unsigned long long a, unsigned long long n ) {
 
 /**
  * ModS12.
- * @param unsigned long long a
- * @param unsigned long long n
+ * @param long long a
+ * @param long long n
  * @return unsigned long long
  */
-unsigned long long ModS12( unsigned long long a, unsigned long long n ) {
-	//return ( a % n + n ) % n; // If negative were possible.
-	return a % n;
+unsigned long long ModS12( long long a, long long n ) {
+	if( n == 0 ) {
+		printf( "NOTE: Cannot calculate modulo of 0.\n" );
+		exit( EXIT_FAILURE );
+	}
+	return ( a % n + n ) % n;
 }
 
 
@@ -344,11 +347,11 @@ unsigned long long ModS12( unsigned long long a, unsigned long long n ) {
  * @return unsigned long long
  */
 unsigned long long ModInvS12( unsigned long long a, unsigned long long n ) {
-	unsigned long long n_orig = n, r;
+	unsigned long long n_orig = n;
 	long long
 		x = 0, y = 1,
 		u = 1, v = 0,
-		b, m;
+		r, b, m;
 	double q;
 
 	while( a != 0 ) {
@@ -450,7 +453,7 @@ long long matrix_det( long long **a, unsigned int n, unsigned long long mod ) {
 		}
 	}
 
-	return ( mod == 0 ) ? det : modulo( det, mod );
+	return ( mod == 0 ) ? det : ModS12( det, mod );
 }
 
 
@@ -517,6 +520,7 @@ void matrix_adj( double **dest, long long **a, unsigned int n, unsigned long lon
  * @param double **dest
  * @param long long **a Matrix.
  * @param unsigned int n Length of matrix
+ * @param unsigned long long mod
  */
 void matrix_inv( double **dest, long long **a, unsigned int n, unsigned long long mod ) {
 	unsigned int i, j;
