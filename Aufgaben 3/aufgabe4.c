@@ -17,12 +17,12 @@ int main( void ) {
 		a_inv[i] = malloc( 3 * sizeof( double ) );
 		e[i] = malloc( 3 * sizeof( double ) );
 	}
-	/*
+/*
 	a[0][0] = 1; a[0][1] = 2; a[0][2] = 0;
 	a[1][0] = -1; a[1][1] = 1; a[1][2] = 1;
 	a[2][0] = 1; a[2][1] = 2; a[2][2] = 3;
 	// det(A) = 9
-	*/
+*/
 	a[0][0] = 5; a[0][1] = 21; a[0][2] = 4;
 	a[1][0] = 1; a[1][1] = 1; a[1][2] = 7;
 	a[2][0] = 2; a[2][1] = 22; a[2][2] = 9;
@@ -41,7 +41,9 @@ int main( void ) {
 	det = matrix_det( a, 3, mod );
 	printf( "----- ----- \n" );
 	printf( "det(A) %% %d = %lld\n", mod, det );
-	printf( "ModInv( det(A), %d ) = %lld\n", mod, ModInvS12( det, mod ) );
+	if( mod != 0 ) {
+		printf( "ModInv( det(A), %d ) = %lld\n", mod, ModInvS12( det, mod ) );
+	}
 
 	// Invert matrix
 	matrix_inv( a_inv, a, 3, mod );
@@ -62,6 +64,9 @@ int main( void ) {
 		for( j = 0; j < 3; j++ ) {
 			for( k = 0; k < 3; k++ ) {
 				e[i][j] += a[i][k] * a_inv[k][j];
+			}
+			if( mod != 0 ) {
+				e[i][j] = ModS12( (long long) e[i][j], mod );
 			}
 		}
 	}

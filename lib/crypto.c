@@ -525,6 +525,7 @@ void matrix_adj( double **dest, long long **a, unsigned int n, unsigned long lon
 void matrix_inv( double **dest, long long **a, unsigned int n, unsigned long long mod ) {
 	unsigned int i, j;
 	long long det = matrix_det( a, n, mod );
+	long long det_inv = ModInvS12( det, mod );
 
 	if( det == 0 ) {
 		printf( "NOTE: No inverse of matrix possible: Determinant equals 0.\n" );
@@ -534,7 +535,14 @@ void matrix_inv( double **dest, long long **a, unsigned int n, unsigned long lon
 	matrix_adj( dest, a, n, mod );
 	for( i = 0; i < n; i++ ) {
 		for( j = 0; j < n; j++ ) {
-			dest[i][j] /= det;
+			// Normal way
+			if( mod == 0 ) {
+				dest[i][j] /= det;
+			}
+			// Including mod
+			else {
+				dest[i][j] = ModS12( (long long) dest[i][j] * det_inv, mod );
+			}
 		}
 	}
 }
