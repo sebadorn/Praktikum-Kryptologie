@@ -9,35 +9,41 @@
 
 #include "../lib/crypto.h"
 
+#define KEY_START 170
 
-const char chiffre_file[] = "cipher.txt";
+const char chiffre_file[] = "cipher_D8.txt";
 const char plain[] = "TheQuickBrownFoxJumpsOverTheLazyDog.";
-const unsigned char KEY_START = 170; // 170 = 10101010
+unsigned char key = KEY_START; // 170 = 10101010
 
 
 
 /**
  * Shift register.
- * @param unsigned char k Value to shift.
  * @return unsigned char Shifted value.
  */
-unsigned char shift_register_8( unsigned char k ) {
-	unsigned char bit1, bit4, bit8_new;
+unsigned char shift_register_8() {
+	unsigned char bit1, bit4, bit8_new, k = 0;
+	int i;
 
-	bit1 = k & 1; // 1 = 00000001
-	bit4 = ( k & 8 ) >> 3; // 8 = 00001000
-	bit8_new = ( bit1 ^ bit4 ) << 7;
+	for( i = 0; i < 8; i++ ) {
+		k |= ( key << i ); // WHY? Why not "k |= ( key & pow( 2, i ) );" ?
 
-	return ( k >> 1 ) | bit8_new;
+		bit1 = key & 1; // 1 = 00000001
+		bit4 = ( key >> 3 ) & 1;
+		bit8_new = ( bit1 ^ bit4 ) << 7;
+		key = ( key >> 1 ) | bit8_new;
+	}
+
+	return k;
 }
 
 
 /**
  *
- * @param unsigned char *dest
- * @param unsigned char *filename
+ * @param char *dest
+ * @param const char *filename
  */
-void read_chiffre( unsigned char *dest, const char *filename ) {
+void read_chiffre( char *dest, const char *filename ) {
 	FILE *src = fopen( filename, "rb" );
 	long pos;
 
@@ -57,37 +63,39 @@ void read_chiffre( unsigned char *dest, const char *filename ) {
 
 /**
  *
- * @param unsigned char *dest
- * @param unsigned char *plain
+ * @param char *dest
+ * @param char *plain
  */
-void stream_cipher( unsigned char *dest, unsigned char *plain ) {
-	unsigned char key = KEY_START;
+void stream_cipher( char *dest, char *plain ) {
 	int i;
 
 	for( i = 0; i < strlen( (const char *)plain ); i++ ) {
-		dest[i] = ( plain[i] ^ key );
-		key = shift_register_8( key );
+		dest[i] = ( plain[i] ^ shift_register_8() );
 	}
 	dest[i] = '\0';
 }
 
 
-int main( int argc, char *argv[] ) {
+int main( void ) {
 	struct stat st;
-	unsigned char *chiffre;
-	unsigned char *chiffre_decrypted;
-	unsigned char encrypted[strlen( plain ) + 1];
-	unsigned char decrypted[strlen( plain ) + 1];
-
+	char
+		*chiffre,
+		*chiffre_decrypted,
+		encrypted[strlen( plain ) + 1],
+		decrypted[strlen( plain ) + 1];
 
 	// Test with encryption and decryption
-	stream_cipher( encrypted, (unsigned char *)plain );
+	key = KEY_START;
+	stream_cipher( encrypted, (char *)plain );
 	printf( "----------\n" );
-	printf( "%s\n-> %s\n", plain, encrypted );
+	printf( "%s\n%s\n", plain, encrypted );
 	printf( "----------\n" );
+
+	key = KEY_START;
 	stream_cipher( decrypted, encrypted );
-	printf( "%s\n-> %s\n", encrypted, decrypted );
+	printf( "%s\n%s\n", encrypted, decrypted );
 	printf( "----------\n" );
+
 
 	// Use it on given message
 
@@ -102,6 +110,7 @@ int main( int argc, char *argv[] ) {
 	read_chiffre( chiffre, chiffre_file );
 
 	// Decrypt it
+	key = KEY_START;
 	stream_cipher( chiffre_decrypted, chiffre );
 	printf( "%s\n----------\n", chiffre_decrypted );
 
