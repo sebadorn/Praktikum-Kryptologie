@@ -6,6 +6,9 @@
 #include "../lib/crypto.h"
 
 
+const char REVERSE[] = "cipher-to-plain1.txt";
+
+
 /**
  *
  * @param unsigend char ... a lot
@@ -191,9 +194,9 @@ int main( int argc, char *argv[] ) {
 		k3, k2, k1
 	);
 
-	outfile = fopen( "cipher-to-plain.txt", "w" );
+	outfile = fopen( REVERSE, "w" );
 	if( outfile == NULL ) {
-		printf( "ERROR: Could not open or create file to write: %s\n", "cipher-to-plain.txt" );
+		printf( "ERROR: Could not open or create file to write: %s\n", REVERSE );
 		return EXIT_FAILURE;
 	}
 
