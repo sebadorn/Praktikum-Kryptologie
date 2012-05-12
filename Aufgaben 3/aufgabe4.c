@@ -57,7 +57,6 @@ int main( void ) {
 		}
 		printf( "\n" );
 	}
-	//printf( "det(A^-1) %% %d = %lld\n", mod, matrix_det( a_inv, 3, 31 ) );
 
 	// A * A^-1 = E
 	for( i = 0; i < 3; i++ ) {
