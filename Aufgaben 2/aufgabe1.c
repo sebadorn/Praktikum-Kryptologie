@@ -127,7 +127,7 @@ void matrix_mult( int *dest, int *a, const int b[DIM][DIM], int rows, int cols )
  * @param int dest[DIM][DIM]
  * @param const int src[DIM][DIM]
  */
-void matrix_inv( int dest[DIM][DIM], const int src[DIM][DIM] ) {
+void matrix_inv_switch( int dest[DIM][DIM], const int src[DIM][DIM] ) {
 	switch( DIM ) {
 		case 2:
 			matrix_modinv_2x2( (int (*)[2]) dest, (const int (*)[2]) src, MODN );
@@ -211,7 +211,7 @@ void decrypt( char *decr, char *encrypted, const int key[DIM][DIM] ) {
 	int msg_blocks[b][DIM];
 
 	msg_to_blocks( msg_blocks, encrypted, b );
-	matrix_inv( inv_key, key );
+	matrix_inv_switch( inv_key, key );
 
 	for( i = 0; i < DIM; i++ ) {
 		for( j = 0; j < DIM; j++ ) {
