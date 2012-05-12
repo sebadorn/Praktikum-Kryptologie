@@ -183,6 +183,29 @@ int main( int argc, char *argv[] ) {
 
 	fclose( outfile );
 
+
+	// Reverse (decrypt)
+	blockcipher(
+		c1, c2, c3, c4,
+		*c1, *c2, *c3, *c4,
+		k3, k2, k1
+	);
+
+	outfile = fopen( "cipher-to-plain.txt", "w" );
+	if( outfile == NULL ) {
+		printf( "ERROR: Could not open or create file to write: %s\n", "cipher-to-plain.txt" );
+		return EXIT_FAILURE;
+	}
+
+	// Write cipher parts
+	write_cipherpart( c1, outfile );
+	write_cipherpart( c2, outfile );
+	write_cipherpart( c3, outfile );
+	write_cipherpart( c4, outfile );
+
+	fclose( outfile );
+
+
 	free( c1 ); free( c2 );
 	free( c3 ); free( c4 );
 	return EXIT_SUCCESS;
