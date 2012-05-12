@@ -12,52 +12,23 @@
 
 const char chiffre_file[] = "cipher.txt";
 const char plain[] = "TheQuickBrownFoxJumpsOverTheLazyDog.";
-int xstart[8] = { 1, 0, 1, 0, 1, 0, 1, 0 };
+const unsigned char KEY_START = 170; // 170 = 10101010
 
-
-/**
- *
- * @param int dest[8]
- * @param int x[8]
- */
-void shift_register_8( unsigned int dest[8], unsigned int x[8] ) {
-	int T[8][8] = {
-		{ 0, 1, 0, 0, 0, 0, 0, 0 },
-		{ 0, 0, 1, 0, 0, 0, 0, 0 },
-		{ 0, 0, 0, 1, 0, 0, 0, 0 },
-		{ 0, 0, 0, 0, 1, 0, 0, 0 },
-		{ 0, 0, 0, 0, 0, 1, 0, 0 },
-		{ 0, 0, 0, 0, 0, 0, 1, 0 },
-		{ 0, 0, 0, 0, 0, 0, 0, 1 },
-		{ 1, 0, 0, 1, 0, 0, 0, 0 }
-	};
-	int i, j, idx;
-
-	for( i = 0; i < 8; i++ ) {
-		idx = 7 - i;
-		dest[idx] = 0;
-		for( j = 0; j < 8; j++ ) {
-			dest[idx] += x[7 - j] * T[i][j];
-		}
-		dest[idx] = dest[idx] % 2;
-	}
-}
 
 
 /**
- *
- * @param int a[8]
- * @return unsigned char
+ * Shift register.
+ * @param unsigned char k Value to shift.
+ * @return unsigned char Shifted value.
  */
-unsigned char bits_to_char( unsigned int a[8] ) {
-	int i, c = 0;
+unsigned char shift_register_8( unsigned char k ) {
+	unsigned char bit1, bit4, bit8_new;
 
-	for( i = 0; i < 8; i++ ) {
-		//c += a[i] * pow( 2.0, 7 - i );
-		c += a[i] << ( 7 - i );
-	}
+	bit1 = k & 1; // 1 = 00000001
+	bit4 = ( k & 8 ) >> 3; // 8 = 00001000
+	bit8_new = ( bit1 ^ bit4 ) << 7;
 
-	return (unsigned char) c;
+	return ( k >> 1 ) | bit8_new;
 }
 
 
@@ -90,59 +61,14 @@ void read_chiffre( unsigned char *dest, const char *filename ) {
  * @param unsigned char *plain
  */
 void stream_cipher( unsigned char *dest, unsigned char *plain ) {
-	unsigned int x[8], key[8];
-	//unsigned int bit[8], c;
-	unsigned int i, j;
-	unsigned char key_char;
-
-	for( i = 0; i < 8; i++ ) {
-		key[i] = xstart[i];
-	}
-
+	unsigned char key = KEY_START;
+	int i;
 
 	for( i = 0; i < strlen( (const char *)plain ); i++ ) {
-		/*
-		// New key from the shift register
-		shift_register_8( key, x );
-
-		// Get bits of char
-		c = (unsigned int) plain[i];
-		bit[0] = c / 128; c -= ( bit[0] * 128 );
-		bit[1] = c / 64;  c -= ( bit[1] * 64 );
-		bit[2] = c / 32;  c -= ( bit[2] * 32 );
-		bit[3] = c / 16;  c -= ( bit[3] * 16 );
-		bit[4] = c / 8;   c -= ( bit[4] * 8 );
-		bit[5] = c / 4;   c -= ( bit[5] * 4 );
-		bit[6] = c / 2;   c -= ( bit[6] * 2 );
-		bit[7] = c;
-
-		// XOR char bits and key
-		c = 0;
-		for( j = 0; j < 8; j++ ) {
-			//printf( "bit[%d] = ( %d + %d ) %% 2 = ", j, bit[j], key[j] );
-			bit[j] = ( bit[j] + key[j] ) % 2;
-			//printf( "%d\n", bit[j] );
-			c += bit[j] * pow( 2.0, 7 - j );
-		}
-
-		dest[i] = (unsigned char) c;
-		//printf( "%d -> %d\n", plain[i], dest[i] );
-
-		// Key will be seed for the next key
-		for( j = 0; j < 8; j++ ) {
-			x[j] = key[j];
-		}
-		*/
-
-		key_char = bits_to_char( key );
-
-		dest[i] = plain[i] ^ key_char;
-
-		for( j = 0; j < 8; j++ ) {
-			x[j] = key[j];
-		}
-		shift_register_8( key, x );
+		dest[i] = ( plain[i] ^ key );
+		key = shift_register_8( key );
 	}
+	dest[i] = '\0';
 }
 
 
