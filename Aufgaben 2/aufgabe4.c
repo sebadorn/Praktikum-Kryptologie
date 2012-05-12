@@ -26,7 +26,7 @@ unsigned char shift_register_8() {
 	int i;
 
 	for( i = 0; i < 8; i++ ) {
-		k |= ( key << i ); // WHY? Why not "k |= ( key & pow( 2, i ) );" ?
+		k |= ( key << i ) & (char) pow( 2, i );
 
 		bit1 = key & 1; // 1 = 00000001
 		bit4 = ( key >> 3 ) & 1;
