@@ -7,26 +7,33 @@
 
 
 const char REVERSE[] = "cipher-to-plain2.txt";
+unsigned char key_state = 0;
 
 
 /**
  *
- * @param unsigned char k Value to shift.
  * @return unsigned char Shifted value.
  */
-unsigned char shift_register( unsigned char k ) {
-	unsigned char first5, last3, bit;
+unsigned char shift_register() {
+	unsigned char first5, last3, bit5, bit3, bit_new, key = 0;
+	int i;
 
-	first5 = k & 248; // 248 = 11111000
-	last3 = k & 7;    // 7   = 00000111
+	first5 = key_state >> 3; // = 00011111
+	last3 = key_state & 7; // 7 = 00000111
 
-	bit = first5 & 8; // 8   = 00001000
-	first5 = ( ( first5 >> 1 ) & 248 ) | ( bit << 4 );
+	for( i = 0; i < 8; i++ ) {
+		bit5 = first5 & 1;
+		bit3 = last3 & 1;
+		bit_new = bit5 ^ bit3;
 
-	bit = last3 & 1;  // 1   = 00000001
-	last3 = ( last3 >> 1 ) | ( bit << 2 );
+		key |= ( bit_new << i ) & (char) pow( 2, i );
 
-	return first5 ^ last3;
+		first5 = ( first5 >> 1 ) | ( bit5 << 4 );
+		last3 = ( last3 >> 1 ) | ( bit3 << 2 );
+		key_state = ( first5 << 3 ) | last3;
+	}
+
+	return key;
 }
 
 
@@ -66,7 +73,7 @@ void write_cipherpart( unsigned char cpart, FILE *outfile ) {
 int main( int argc, char *argv[] ) {
 	FILE *infile, *outfile;
 	char *infilename, *outfilename, buffer[9];
-	unsigned char key_orig = 0, key, m[8], c[8];
+	unsigned char key_orig = 0, key_first, m[8], c[8];
 	int i, j, l;
 
 	// Read parameters
@@ -94,7 +101,7 @@ int main( int argc, char *argv[] ) {
 	printf( "  Key: %s\n", buffer );
 
 	// Get message parts
-	printf( "  m: " );
+	printf( "  m:    " );
 	for( i = 0; i < 8; i++ ) {
 		fseek( infile, 9 * ( i + 1 ), SEEK_SET );
 		fgets( buffer, 9, infile );
@@ -112,11 +119,11 @@ int main( int argc, char *argv[] ) {
 
 	// When does the key start repeating?
 	i = 0;
-	key = key_orig;
+	key_state = key_orig; // Reset initial key
+	key_first = shift_register();
 	while( 1 ) {
-		key = shift_register( key );
 		i++;
-		if( key == key_orig ) {
+		if( shift_register() == key_first ) {
 			printf( "  Key repeats after %d shifts.\n", i );
 			break;
 		}
@@ -131,10 +138,9 @@ int main( int argc, char *argv[] ) {
 	}
 
 	printf( "  m->c: " );
-	key = key_orig;
+	key_state = key_orig; // Reset initial key
 	for( i = 0; i < 8; i++ ) {
-		c[i] = encrypt( m[i], key );
-		key = shift_register( key );
+		c[i] = encrypt( m[i], shift_register() );
 		write_cipherpart( c[i], outfile );
 		printf( "%d ", c[i] );
 	}
@@ -151,10 +157,9 @@ int main( int argc, char *argv[] ) {
 	}
 
 	printf( "  c->m: " );
-	key = key_orig;
+	key_state = key_orig; // Reset initial key
 	for( i = 0; i < 8; i++ ) {
-		m[i] = encrypt( c[i], key );
-		key = shift_register( key );
+		m[i] = encrypt( c[i], shift_register() );
 		write_cipherpart( m[i], outfile );
 		printf( "%d ", m[i] );
 	}

@@ -5,25 +5,33 @@
 
 #include "../lib/crypto.h"
 
+#define START_KEY 170
 
 const int BUF = 256;
-const unsigned char START_KEY = 170; // 170 = 10101010
+unsigned char key_state = START_KEY;
 
 
 /**
  * Very simple shift register without XOR.
- * @param unsigned char k
  * @return unsigned char
  */
-unsigned char shift_register( unsigned char k ) {
-	return ( k >> 1 ) | ( k & 1 );
+unsigned char shift_register() {
+	unsigned char key = 0, bit;
+	int i;
+
+	for( i = 0; i < 8; i++ ) {
+		bit = key_state & 1;
+		key |= ( bit << i ) & (char) pow( 2, i );
+		key_state = ( key_state >> 1 ) | ( bit << 7 );
+	}
+
+	return key;
 }
 
 
 int main( int argc, char *argv[] ) {
 	FILE *infile, *outfile;
 	char *infname, *outfname, msg[BUF], *c = malloc( sizeof( char ) );
-	unsigned char key;
 	int i;
 
 	// Read parameters
@@ -50,10 +58,9 @@ int main( int argc, char *argv[] ) {
 		return EXIT_FAILURE;
 	}
 
-	key = START_KEY;
+	key_state = START_KEY; // Reset initial key
 	for( i = 0; i < strlen( msg ); i++ ) {
-		*c = msg[i] ^ key;
-		key = shift_register( key );
+		*c = msg[i] ^ shift_register();
 		fwrite( c, 1, 1, outfile );
 	}
 	fclose( outfile );
