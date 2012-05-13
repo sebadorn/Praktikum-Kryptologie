@@ -67,9 +67,9 @@ void read_chiffre( char *dest, const char *filename ) {
  * @param char *plain
  */
 void stream_cipher( char *dest, char *plain ) {
-	int i;
+	int i, limit = strlen( (const char *)plain );
 
-	for( i = 0; i < strlen( (const char *)plain ); i++ ) {
+	for( i = 0; i < limit; i++ ) {
 		dest[i] = ( plain[i] ^ shift_register_8() );
 	}
 	dest[i] = '\0';
