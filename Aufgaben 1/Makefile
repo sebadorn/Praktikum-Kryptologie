@@ -1,12 +1,12 @@
 CC = gcc
-CFLAGS = -g -lm -Wall
+CFLAGS = -g -Wall
 SRCS = $(wildcard *.c)
 PROGS = $(patsubst %.c,%.out,$(SRCS))
 
 all: $(PROGS)
 
 %.out: %.c
-	$(CC) $(CFLAGS) $< -o $@
+	$(CC) $(CFLAGS) $< -o $@ -lm
 
 .PHONY: clean
 

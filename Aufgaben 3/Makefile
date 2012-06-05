@@ -9,7 +9,7 @@ cryptolib: $(CRYPTOLIB).c
 	$(CC) -c -Wall $(CRYPTOLIB).c -o $(CRYPTOLIB).o
 
 %.out: %.c
-	$(CC) -g -lm -Wall $< -o $@ $(CRYPTOLIB).o
+	$(CC) -g -Wall $< -o $@ $(CRYPTOLIB).o -lm
 
 .PHONY: clean
 
