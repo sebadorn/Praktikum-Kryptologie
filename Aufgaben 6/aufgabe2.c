@@ -5,94 +5,83 @@
 
 #include "../lib/crypto.h"
 
+#define TRUE 1
+#define FALSE 0
+
+// Our alphabet: a-z,|,!,:,-,? (0-30)
+
 long long KEY[3][3]; // "HILLKEY!"
 int MODN = 0; // 31
 
 
 /**
- * Multiply two matrices (or a matrix and a vector).
- * @param long long dest_mat[3][3] Matrix with the result.
- * @param long long a_mat[3][3] Matrix a.
- * @param double b_mat[3][3] Matrix b.
- */
-void matrix_mult( long long dest_mat[3][3], long long a_mat[3][3], long long b_mat[3][3] ) {
-	int i, j, k = 0;
-
-	for( i = 0; i < 3; i++ ) {
-		for( j = 0; j < 3; j++ ) {
-			dest_mat[i][j] = 0;
-			for( k = 0; k < 3; k++ ) {
-				dest_mat[i][j] += a_mat[i][k] * b_mat[k][j];
-			}
-		}
-	}
-}
-
-
-/**
  *
- * @param long long (*dest)[9]
+ * @param long long dest[3][3]
  * @param char *src
  * @param int blocks
+ * @param int flag_decipher TRUE or FALSE.
  */
-void msg_to_blocks( long long (*dest)[9], char *src, int blocks ) {
-	int i, j, k = 0;
-	long long sum = 0;
+void msg_to_blocks( long long dest[3][3], char *src, int flag_decipher ) {
+	int j, k, m, val;
+	long long sum;
 
-	for( i = 0; i < blocks; i++ ) {
-		for( j = 0; j < 9; j++ ) {
-			// Parity
-			if( i == 1 && j == 1 ) {
+	m = 0; sum = 0;
+	for( j = 0; j < 3; j++ ) {
+		for( k = 0; k < 3; k++ ) {
+			// Parity later
+			if( flag_decipher == FALSE && j == 1 && k == 1 ) {
 				continue;
 			}
 
-			dest[i][j] = ( k < strlen( src ) ) ? (int) src[k++] - 'A' : 0;
-			sum += dest[i][j];
+			switch( src[m] ) {
+				case '|': val = 26; break;
+				case '!': val = 27; break;
+				case ':': val = 28; break;
+				case '-': val = 29; break;
+				case '?': val = 30; break;
+				default:  val = src[m] - 'a';
+			}
+
+			m++;
+			dest[j][k] = val;
+			sum += dest[j][k];
 		}
+	}
+
+	if( flag_decipher == FALSE ) {
 		dest[1][1] = ModS12( sum, MODN );
-		sum = 0;
 	}
 }
 
 
 /**
- *
- * @param char *src
- * @return int
- */
-int count_blocks_needed( char *src ) {
-	int blocks = strlen( src ) / 8;
-
-	return ModS12( strlen( src ), 8 ) != 0 ? blocks + 1 : blocks;
-}
-
-
-/**
- *
- * @param char *enc
- * @param char *plain
+ * Encrypt a hill cipher.
+ * @param char *enc Result: the cipher.
+ * @param char *plain Message to encrypt.
  */
 void hillverH33( char *enc, char *plain ) {
-	int i, j, k = 0, t;
-	int blocks_needed = count_blocks_needed( plain );
+	int j, k = 0, t;
 	long long m_enc[3][3];
-	long long msg_blocks[blocks_needed][9];
-	long long mb[3][3] = {{0},{0},{0}};
+	long long msg_blocks[3][3];
+	long long val;
 
-	msg_to_blocks( msg_blocks, plain, blocks_needed );
+	msg_to_blocks( msg_blocks, plain, FALSE );
+	matrix_mult( m_enc, KEY, msg_blocks, 3 );
 
-	for( i = 0; i < blocks_needed; i++ ) {
-		for( t = 0; t < 9; t++ ) {
-			(*mb)[t] = msg_blocks[i][t];
-		}
-		matrix_mult( m_enc, mb, KEY );
+	t = 0;
+	for( j = 0; j < 3; j++ ) {
+		for( k = 0; k < 3; k++ ) {
+			m_enc[j][k] = ModS12( m_enc[j][k], MODN );
 
-		t = 0;
-		for( j = 0; j < 3; j++ ) {
-			for( k = 0; k < 3; k++ ) {
-				m_enc[j][k] = ModS12( m_enc[j][k], MODN );
-				enc[t++] = m_enc[j][k] + 'A';
+			switch( m_enc[j][k] ) {
+				case 26: val = '|' - 'a'; break;
+				case 27: val = '!' - 'a'; break;
+				case 28: val = ':' - 'a'; break;
+				case 29: val = '-' - 'a'; break;
+				case 30: val = '?' - 'a'; break;
+				default: val = m_enc[j][k];
 			}
+			enc[t++] = val + 'a';
 		}
 	}
 	enc[t] = '\0';
@@ -100,39 +89,35 @@ void hillverH33( char *enc, char *plain ) {
 
 
 /**
- *
- * @param char *decr
- * @param char *encrypted
+ * Decrypt the hill cipher again.
+ * @param char *decr Result: the message.
+ * @param char *encrypted Cipher to decrypt.
  */
 void hillentH33( char *decr, char *encrypted ) {
-	int i, j, k = 0, t;
-	int blocks_needed = count_blocks_needed( encrypted );
-	long long inv_key[3][3];
+	int i, j, k, t;
+	double inv_key[3][3];
+	long long inv_key_ll[3][3];
 	long long m_decr[3][3];
-	long long msg_blocks[blocks_needed][9];
-	long long mb[3][3] = {{0},{0},{0}};
+	long long msg_blocks[3][3];
 
-	msg_to_blocks( msg_blocks, encrypted, blocks_needed );
-	matrix_inv( (double (*)[3]) inv_key, KEY, 3, MODN );
+	msg_to_blocks( msg_blocks, encrypted, TRUE );
+	matrix_inv( inv_key, KEY, 3, MODN );
 
-	for( i = 0; i < 3; i++ ) {
-		for( j = 0; j < 3; j++ ) {
-			inv_key[i][j] = ModS12( inv_key[i][j], MODN );
-		}
+	for( i = 0; i < 9; i++ ) {
+		(*inv_key_ll)[i] = (long long) (*inv_key)[i];
 	}
 
-	for( i = 0; i < blocks_needed; i++ ) {
-		for( t = 0; t < 9; t++ ) {
-			(*mb)[t] = msg_blocks[i][t];
-		}
-		matrix_mult( m_decr, mb, inv_key );
+	matrix_mult( m_decr, inv_key_ll, msg_blocks, 3 );
 
-		t = 0;
-		for( j = 0; j < 3; j++ ) {
-			for( k = 0; k < 3; k++ ) {
-				m_decr[j][k] = ModS12( m_decr[j][k], MODN );
-				decr[t++] = m_decr[j][k] + 'A';
+	t = 0; k = 0;
+	for( j = 0; j < 3; j++ ) {
+		for( k = 0; k < 3; k++ ) {
+			// Ignore parity
+			if( j == 1 && k == 1 ) {
+				continue;
 			}
+			m_decr[j][k] = ModS12( m_decr[j][k], MODN );
+			decr[t++] = m_decr[j][k] + 'a';
 		}
 	}
 	decr[t] = '\0';
@@ -143,7 +128,9 @@ int main( int argc, char *argv[] ) {
 	char *msg; // "lestersh"
 	char *ciph;
 	int i, j, k;
-	long long sum, key_det;
+	long long val, key_det;
+	//long long sum = 0;
+	int xor = 0;
 
 	if( argc < 4 ) {
 		printf( "  ERROR: Not enough parameters.\n" );
@@ -151,18 +138,29 @@ int main( int argc, char *argv[] ) {
 	}
 
 	msg = argv[2];
-	ciph = malloc( sizeof( char ) * strlen( msg ) );
-
+	ciph = malloc( strlen( msg ) + 2 );
 	MODN = atoi( argv[3] );
 
 	// Convert key from string to matrix.
 	j = 0; k = 0;
 	for( i = 0; i < strlen( argv[1] ); i++ ) {
 		// Skip parity
-		if( j == 1 && k == 1 ) { k++; }
+		if( j == 1 && k == 1 ) {
+			k++;
+		}
 
-		KEY[j][k++] = argv[1][i];
-		sum += argv[1][i];
+		switch( argv[1][i] ) {
+			case '|': val = 26; break;
+			case '!': val = 27; break;
+			case ':': val = 28; break;
+			case '-': val = 29; break;
+			case '?': val = 30; break;
+			default:  val = argv[1][i] - 'A';
+		}
+		KEY[j][k] = val;
+		//sum += KEY[j][k];
+		xor ^= KEY[j][k];
+		k++;
 
 		if( k >= 3 ) {
 			k = 0;
@@ -170,7 +168,8 @@ int main( int argc, char *argv[] ) {
 		}
 	}
 	// Parity
-	KEY[1][1] = ModS12( sum, MODN );
+	//KEY[1][1] = ModS12( sum, MODN );
+	KEY[1][1] = ModS12( xor, MODN );
 
 	// For decryption, gcd( det KEY, MODN ) has to equal 1.
 	key_det = matrix_det( KEY, 3, MODN );

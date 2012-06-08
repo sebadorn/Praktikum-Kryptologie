@@ -24,3 +24,4 @@ extern unsigned long long ModExpS12( unsigned long long a, unsigned long long b,
 extern long long matrix_det( long long (*a)[], unsigned int n, unsigned long long mod );
 extern void matrix_adj( double (*dest)[], long long (*a)[], unsigned int n, unsigned long long mod );
 extern void matrix_inv( double (*dest)[], long long (*a)[], unsigned int n, unsigned long long mod );
+extern void matrix_mult( long long (*dest_mat)[], long long (*a_mat)[], long long (*b_mat)[], unsigned int n );

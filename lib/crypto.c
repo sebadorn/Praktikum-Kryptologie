@@ -535,3 +535,27 @@ void matrix_inv( double (*dest)[], long long (*a)[], unsigned int n, unsigned lo
 		}
 	}
 }
+
+
+/**
+ * Multiply two matrices (or a matrix and a vector).
+ * @param long long (*dest_mat)[] Matrix with the result.
+ * @param long long (*a_mat)[] Matrix a.
+ * @param long long (*b_mat)[] Matrix b.
+ * @param unsigned int n Length of matrix, for example n = 3 for a 3x3 matrix.
+ */
+void matrix_mult( long long (*dest_mat)[], long long (*a_mat)[], long long (*b_mat)[], unsigned int n ) {
+	int i, j, k, p_index, p_index2, p_index3;
+
+	for( i = 0; i < n; i++ ) {
+		for( j = 0; j < n; j++ ) {
+			p_index = i * n + j;
+			(*dest_mat)[p_index] = 0;
+			for( k = 0; k < n; k++ ) {
+				p_index2 = i * n + k;
+				p_index3 = k * n + j;
+				(*dest_mat)[p_index] += (*a_mat)[p_index2] * (*b_mat)[p_index3];
+			}
+		}
+	}
+}
