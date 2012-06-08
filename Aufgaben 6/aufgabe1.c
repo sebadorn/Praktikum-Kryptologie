@@ -69,7 +69,7 @@ int main( int argc, char *argv[] ) {
 
 	if( argc < 5 ) {
 		printf( "  ERROR: Not enough parameters provided.\n" );
-		printf( "  Parameters: t, k, n, msg" );
+		printf( "  Parameters: t, k, n, msg\n" );
 		return EXIT_FAILURE;
 	}
 

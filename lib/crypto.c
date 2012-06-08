@@ -399,14 +399,15 @@ unsigned long long ModExpS12( unsigned long long a, unsigned long long b,
 
 /**
  * Calculate determinant of a n x n matrix.
- * @param long long **a Matrix.
+ * @param long long (*a)[] Matrix.
  * @param unsigned int n Length of matrix.
  * @param unsigned long long mod
  * @return long long Determinant of matrix.
  */
-long long matrix_det( long long **a, unsigned int n, unsigned long long mod ) {
+long long matrix_det( long long (*a_mat)[], unsigned int n, unsigned long long mod ) {
+	unsigned int p_index, p_index2;
 	long long det, i, j, k, l;
-	long long **m = NULL;
+	long long m[n-1][n-1];
 
 	// Not possible
 	if( n < 1 ) {
@@ -416,40 +417,30 @@ long long matrix_det( long long **a, unsigned int n, unsigned long long mod ) {
 
 	// 1 x 1
 	if( n == 1 ) {
-		det = a[0][0];
+		det = *(*a_mat);
 	}
 	// 2 x 2
 	else if( n == 2 ) {
-		det = a[0][0] * a[1][1] - a[1][0] * a[0][1];
+		det = (*(*a_mat)) * (*(*a_mat+3)) - (*(*a_mat+2)) * (*(*a_mat+1));
 	}
 	// n x n
 	else {
 		det = 0;
 		for( i = 0; i < n; i++ ) {
-			// Get memory for temporary matrix
-			m = malloc( ( n - 1 ) * sizeof( long long *) );
-			for( j = 0; j < n - 1; j++ ) {
-				m[j] = malloc( ( n - 1 ) * sizeof( long long ) );
-			}
-
 			for( j = 1; j < n; j++ ) {
 				k = 0;
 				for( l = 0; l < n; l++ ) {
 					if( l == i ) {
 						continue;
 					}
-					m[j - 1][k] = a[j][l];
+					p_index = ( j - 1 ) * ( n - 1 ) + k;
+					p_index2 = j * n + l;
+					*(*m + p_index) = *(*a_mat + p_index2);
 					k++;
 				}
 			}
 
-			det += pow( -1.0, 2.0 + i ) * a[0][i] * matrix_det( m, n - 1, 0 );
-
-			// Clean up
-			for( j = 0; j < n - 1; j++ ) {
-				free( m[j] );
-			}
-			free( m );
+			det += pow( -1.0, 2.0 + i ) * (*(*a_mat + i)) * matrix_det( m, n - 1, 0 );
 		}
 	}
 
@@ -459,20 +450,16 @@ long long matrix_det( long long **a, unsigned int n, unsigned long long mod ) {
 
 /**
  * Calculates the adjoint matrix.
- * @param double **dest
- * @param long long **a Matrix.
+ * @param double (*dest)[]
+ * @param long long (*a)[] Matrix.
  * @param unsigned int n Length of matrix.
  * @param unsigned long long mod
  */
-void matrix_adj( double **dest, long long **a, unsigned int n, unsigned long long mod ) {
-	int i, j, k, l, m, o;
+void matrix_adj( double (*dest_mat)[], long long (*a_mat)[], unsigned int n, unsigned long long mod ) {
+	unsigned int i, j, k, l, m, o;
+	unsigned int p_index, p_index2; // Array index in pointer.
 	long long det, tmp;
-	long long **c;
-
-	c = malloc( ( n - 1 ) * sizeof( long long *) );
-	for( i = 0; i < n - 1; i++ ) {
-		c[i] = malloc( ( n - 1 ) * sizeof( long long ) );
-	}
+	long long c[n-1][n-1];
 
 	for( i = 0; i < n; i++ ) {
 		for( j = 0; j < n; j++ ) {
@@ -487,29 +474,28 @@ void matrix_adj( double **dest, long long **a, unsigned int n, unsigned long lon
 					if( o == i ) {
 						continue;
 					}
-					c[k][m] = a[l][o];
+					p_index = l * n + o;
+					c[k][m] = *(*a_mat + p_index);
 					m++;
 				}
 				k++;
 			}
 
 			det = matrix_det( c, n - 1, mod );
-			dest[j][i] = pow( -1.0, j + i + 2.0 ) * det;
+			p_index = j * n + i;
+			*(*dest_mat + p_index) = pow( -1.0, j + i + 2.0 ) * det;
 		}
 	}
-
-	// Clean up
-	for( i = 0; i < n - 1; i++ ) {
-		free( c[i] );
-	}
-	free( c );
 
 	// Transpose
 	for( i = 1; i < n; i++ ) {
 		for( j = 0; j < i; j++ ) {
-			tmp = dest[i][j];
-			dest[i][j] = dest[j][i];
-			dest[j][i] = tmp;
+			p_index = i * n + j;
+			p_index2 = j * n + i;
+
+			tmp = *(*dest_mat + p_index);
+			*(*dest_mat + p_index) = *(*dest_mat + p_index2);
+			*(*dest_mat + p_index2) = tmp;
 		}
 	}
 }
@@ -517,15 +503,17 @@ void matrix_adj( double **dest, long long **a, unsigned int n, unsigned long lon
 
 /**
  *
- * @param double **dest
- * @param long long **a Matrix.
+ * @param double (*dest)[]
+ * @param long long (*a)[] Matrix.
  * @param unsigned int n Length of matrix
  * @param unsigned long long mod
  */
-void matrix_inv( double **dest, long long **a, unsigned int n, unsigned long long mod ) {
-	unsigned int i, j;
-	long long det = matrix_det( a, n, mod );
-	long long det_inv = ModInvS12( det, mod );
+void matrix_inv( double (*dest)[], long long (*a)[], unsigned int n, unsigned long long mod ) {
+	unsigned int i, j, p_index;
+	long long det, det_inv;
+
+	det = matrix_det( a, n, mod );
+	det_inv = ModInvS12( det, mod );
 
 	if( det == 0 ) {
 		printf( "NOTE: No inverse of matrix possible: Determinant equals 0.\n" );
@@ -535,13 +523,14 @@ void matrix_inv( double **dest, long long **a, unsigned int n, unsigned long lon
 	matrix_adj( dest, a, n, mod );
 	for( i = 0; i < n; i++ ) {
 		for( j = 0; j < n; j++ ) {
+			p_index = i * n + j;
 			// Normal way
 			if( mod == 0 ) {
-				dest[i][j] /= det;
+				*(*dest + p_index) /= det;
 			}
 			// Including mod
 			else {
-				dest[i][j] = ModS12( (long long) dest[i][j] * det_inv, mod );
+				*(*dest + p_index) = ModS12( (long long) *(*dest + p_index) * det_inv, mod );
 			}
 		}
 	}

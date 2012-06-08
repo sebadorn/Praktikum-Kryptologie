@@ -7,16 +7,19 @@
 int main( void ) {
 	int i, j, k, mod = 31;
 	long long det;
-	long long **a = malloc( 3 * sizeof( long long ) );
+	/*long long **a = malloc( 3 * sizeof( long long ) );
 	double **a_inv = malloc( 3 * sizeof( double ) );
-	double **e = malloc( 3 * sizeof( double ) );
+	double **e = malloc( 3 * sizeof( double ) );*/
+	long long a[3][3];
+	double a_inv[3][3];
+	double e[3][3];
 
 	// Arrays suck in C
-	for( i = 0; i < 3; i++ ) {
+	/*for( i = 0; i < 3; i++ ) {
 		a[i] = malloc( 3 * sizeof( long long ) );
 		a_inv[i] = malloc( 3 * sizeof( double ) );
 		e[i] = malloc( 3 * sizeof( double ) );
-	}
+	}*/
 /*
 	a[0][0] = 1; a[0][1] = 2; a[0][2] = 0;
 	a[1][0] = -1; a[1][1] = 1; a[1][2] = 1;
@@ -24,7 +27,7 @@ int main( void ) {
 	// det(A) = 9
 */
 	a[0][0] = 5; a[0][1] = 21; a[0][2] = 4;
-	a[1][0] = 1; a[1][1] = 1; a[1][2] = 7;
+	a[1][0] = 1; a[1][1] = 1;  a[1][2] = 7;
 	a[2][0] = 2; a[2][1] = 22; a[2][2] = 9;
 
 	// Matrix before inversion
@@ -78,16 +81,6 @@ int main( void ) {
 		}
 		printf( "\n" );
 	}
-
-	// Clean up
-	for( i = 0; i < 3; i++ ) {
-		free( a[i] );
-		free( a_inv[i] );
-		free( e[i] );
-	}
-	free( e );
-	free( a_inv );
-	free( a );
 
 	return EXIT_SUCCESS;
 }
