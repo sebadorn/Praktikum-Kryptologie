@@ -23,9 +23,9 @@ int MODN = 0; // 31
  */
 void msg_to_blocks( long long dest[3][3], char *src, int flag_decipher ) {
 	int j, k, m, val;
-	long long sum;
+	long long xor = 0;
 
-	m = 0; sum = 0;
+	m = 0;
 	for( j = 0; j < 3; j++ ) {
 		for( k = 0; k < 3; k++ ) {
 			// Parity later
@@ -44,12 +44,13 @@ void msg_to_blocks( long long dest[3][3], char *src, int flag_decipher ) {
 
 			m++;
 			dest[j][k] = val;
-			sum += dest[j][k];
+			//sum += dest[j][k];
+			xor ^= dest[j][k];
 		}
 	}
 
 	if( flag_decipher == FALSE ) {
-		dest[1][1] = ModS12( sum, MODN );
+		dest[1][1] = ModS12( xor, MODN );
 	}
 }
 
